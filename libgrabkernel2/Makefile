@@ -67,7 +67,15 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.m
 
 ifeq ($(DISABLE_TESTS), 0)
 .SECONDEXPANSION:
-$(TESTS_OUTPUT_DIR)/%: $$(wildcard $(TESTS_SRC_DIR)/%/*.m) $(STATIC_LIB)
+$(TESTS_OUTPUT_DIR)/%: $$(wildcard $(TESTS_SRC_DIR)/%/test.m) $(STATIC_LIB)
+	@mkdir -p $(@D)
+	@rm -rf $@
+	$(CC) $(CFLAGS) $(LDFLAGS) -I$(OUTPUT_DIR)/include -o $@ $^
+	@if [ "$(TARGET)" = "ios" ]; then \
+		ldid -S_external/ios/entitlements.plist $@; \
+	fi
+
+$(TESTS_OUTPUT_DIR)/%_6s: $$(wildcard $(TESTS_SRC_DIR)/%/test_6s.m) $(STATIC_LIB)
 	@mkdir -p $(@D)
 	@rm -rf $@
 	$(CC) $(CFLAGS) $(LDFLAGS) -I$(OUTPUT_DIR)/include -o $@ $^
