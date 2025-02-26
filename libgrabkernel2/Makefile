@@ -49,7 +49,13 @@ endif
 
 HEADER_OUTPUT_DIR := $(OUTPUT_DIR)/include
 
+STATIC_ONLY ?= 0
+
+ifeq ($(STATIC_ONLY), 1)
+all: copy-headers $(STATIC_LIB)
+else
 all: copy-headers $(STATIC_LIB) $(DYNAMIC_LIB) $(TESTS_BINARIES)
+endif
 
 $(STATIC_LIB): $(OBJ_FILES)
 	@mkdir -p $(LIB_DIR)
