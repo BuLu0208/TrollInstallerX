@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    name: Build TrollInstallerX
+    name: Build libgrabkernel2
     runs-on: macos-latest
 
     steps:
@@ -24,49 +24,14 @@ jobs:
         with:
           submodules: true
 
-      - name: Pre theos
-        run: |
-         curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos > theos
-         sed -i '' 's/get_sdks$//g' theos
-         bash theos
-
-      - name: Setup Environment
-        run: echo "THEOS=~/theos" >> $GITHUB_ENV
-
-      - name: Set env
-        run: |
-          sT=$(TZ=UTC-8 date +'%S')
-          echo "msT=$(date -j -f "%Y-%m-%d %H:%M:%S" "$(TZ=UTC-8 date +'%Y-%m-%d %H:%M'):${sT}" +%s)" >> $GITHUB_ENV
-          echo "logT=$(TZ=UTC-8 date +'%Y年%m月%d %H:%M'):${sT}" >> $GITHUB_ENV
-
-      - name: Print env
-        run: |
-          echo ${{ env.VERSION }}
-          echo ${{ env.msT }}
-          echo ${{ env.logT }}
-
-      - name: Pre body
-        run: |
-          echo -e "更新时间：${{ env.logT }}" >> release.txt
-          echo -e "> - 同步官方1.0.3正式版更新，简体中文汉化编译." >> release.txt
-
       - name: Build libgrabkernel2
         run: |
           cd libgrabkernel2
           make TARGET=ios
-          mkdir -p ../TrollInstallerX/External/lib
-          cp output/ios/lib/libgrabkernel2.a ../TrollInstallerX/External/lib/
-          mkdir -p ../TrollInstallerX/External/include/libgrabkernel2
-          cp output/ios/include/libgrabkernel2.h ../TrollInstallerX/External/include/libgrabkernel2/
 
-      - name: Build ipa
-        run: |
-          chmod +x ./build.sh
-          ./build.sh
-
-      - name: Upload IPA
+      - name: Upload libgrabkernel2
         uses: actions/upload-artifact@v4
         with:
-          name: TrollInstallerX
-          path: TrollInstallerX.ipa
+          name: libgrabkernel2
+          path: libgrabkernel2/output/ios/lib/libgrabkernel2.a
           retention-days: 365
