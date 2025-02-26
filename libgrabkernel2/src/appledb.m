@@ -34,22 +34,58 @@ static NSData *makeSynchronousRequest(NSString *url, NSError **error) {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     __block NSData *data = nil;
     __block NSError *taskError = nil;
-    NSURLSession *session = [NSURLSession sharedSession];
-
+    __block int64_t totalBytes = 0;
+    __block int64_t receivedBytes = 0;
+    
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    config.timeoutIntervalForRequest = 60.0;  // 设置请求超时时间为60秒
+    config.timeoutIntervalForResource = 800.0;  // 设置资源下载超时时间为1小时
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:config
+                                                       delegate:nil
+                                                  delegateQueue:[NSOperationQueue mainQueue]];
+    
     NSURLSessionDataTask *task = [session dataTaskWithURL:[NSURL URLWithString:url]
                                         completionHandler:^(NSData *taskData, NSURLResponse *response, NSError *error) {
+                                            if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+                                                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                                                if (httpResponse.statusCode != 200) {
+                                                    if (error == nil) {
+                                                        error = [NSError errorWithDomain:NSURLErrorDomain
+                                                                                 code:httpResponse.statusCode
+                                                                             userInfo:@{NSLocalizedDescriptionKey: @"HTTP error"}];
+                                                    }
+                                                    taskData = nil;
+                                                }
+                                            }
                                             data = taskData;
                                             taskError = error;
                                             dispatch_semaphore_signal(semaphore);
                                         }];
+    
+    // 发送进度通知
+    if (task.countOfBytesExpectedToReceive > 0) {
+        receivedBytes = task.countOfBytesReceived;
+        totalBytes = task.countOfBytesExpectedToReceive;
+        float progress = (float)receivedBytes / totalBytes;
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"DownloadProgressUpdated"
+                                                        object:nil
+                                                      userInfo:@{
+                                                          @"progress": @(progress),
+                                                          @"receivedBytes": @(receivedBytes),
+                                                          @"totalBytes": @(totalBytes)
+                                                      }];
+    }
+    
     [task resume];
-
+    
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
+    
     if (error) {
         *error = taskError;
     }
-
+    
     return data;
 }
 

@@ -11,13 +11,18 @@ struct LogView: View {
     
     @AppStorage("verbose", store: TIXDefaults()) var verbose: Bool = false
     
+    // 添加下载进度状态
+    @State private var downloadProgress: Float = 0.0
+    @State private var downloadedBytes: Int64 = 0
+    @State private var totalBytes: Int64 = 0
+    @State private var isDownloading: Bool = false
+    
     let pipe = Pipe()
     let sema = DispatchSemaphore(value: 0)
     @State private var stdoutString = ""
     @State private var stdoutItems = [StdoutLog]()
     
     @State var verboseID = UUID()
-    
     
     var body: some View {
         GeometryReader { geometry in
@@ -44,6 +49,29 @@ struct LogView: View {
                     } else {
                         VStack(alignment: .leading) {
                             Spacer()
+                            
+                            // 添加下载进度显示
+                            if isDownloading {
+                                VStack(alignment: .leading) {
+                                    Text("正在下载文件...")
+                                        .font(.system(size: 13, weight: .regular, design: .rounded))
+                                        .foregroundColor(.white)
+                                    
+                                    ProgressView(value: downloadProgress)
+                                        .progressViewStyle(LinearProgressViewStyle())
+                                        .frame(height: 8)
+                                        .accentColor(.blue)
+                                    
+                                    Text(String(format: "%.1f%% (%.2f MB / %.2f MB)", 
+                                              downloadProgress * 100,
+                                              Float(downloadedBytes) / 1024 / 1024,
+                                              Float(totalBytes) / 1024 / 1024))
+                                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+                                .padding(.vertical, 5)
+                            }
+                            
                             ForEach(logger.logItems) { log in
                                 HStack {
                                     Label(
@@ -83,32 +111,24 @@ struct LogView: View {
                                 proxy.scrollTo(logger.logItems.last!.id, anchor: .bottom)
                             }
                         }
-                    }
-                }
-                .onAppear {
-                    if verbose {
-                        pipe.fileHandleForReading.readabilityHandler = { fileHandle in
-                            let data = fileHandle.availableData
-                            if data.isEmpty  { // end-of-file condition
-                                fileHandle.readabilityHandler = nil
-                                sema.signal()
-                            } else {
-                                stdoutString += String(data: data, encoding: .utf8)!
-                                stdoutItems.append(StdoutLog(message: String(data: data, encoding: .utf8)!))
-                            }
+                        
+                        // 添加下载进度通知监听
+                        .onAppear {
+                            NotificationCenter.default.addObserver(
+                                forName: NSNotification.Name("DownloadProgressUpdated"),
+                                object: nil,
+                                queue: .main) { notification in
+                                    if let progress = notification.userInfo?["progress"] as? Float,
+                                       let received = notification.userInfo?["receivedBytes"] as? Int64,
+                                       let total = notification.userInfo?["totalBytes"] as? Int64 {
+                                        isDownloading = true
+                                        downloadProgress = progress
+                                        downloadedBytes = received
+                                        totalBytes = total
+                                    }
+                                }
                         }
-                        // Redirect
-                        print("Redirecting stdout")
-                        setvbuf(stdout, nil, _IONBF, 0)
-                        dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
                     }
-                }
-            }
-            .contextMenu {
-                Button {
-                    UIPasteboard.general.string = verbose ? stdoutString : Logger.shared.logString
-                } label: {
-                    Label("复制到剪贴板", systemImage: "doc.on.doc")
                 }
             }
         }
