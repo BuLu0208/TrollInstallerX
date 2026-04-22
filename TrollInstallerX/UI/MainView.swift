@@ -1,4 +1,4 @@
-﻿//
+//
 //  MainView.swift
 //  TrollInstallerX
 //
@@ -73,7 +73,7 @@ struct MainView: View {
                                     .frame(maxHeight: geometry.size.height / 1.75)
                             } else {
                                 Button(action: {
-                                    if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
+                                    if !isShowingSettings && !isShowingMDCAlert {
                                         UIImpactFeedbackGenerator().impactOccurred()
                                         withAnimation {
                                             isInstalling.toggle()
@@ -102,10 +102,6 @@ struct MainView: View {
                     .blur(radius: (isShowingMDCAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
                 }
                 
-                if isShowingOTAAlert {
-                    PopupView(isShowingAlert: $isShowingOTAAlert, content: {
-                        TrollHelperOTAView(arm64eVersion: .constant(false))
-                    })
                 }
                 
                 if isShowingMDCAlert {
@@ -151,29 +147,20 @@ struct MainView: View {
                     UINotificationFeedbackGenerator().notificationOccurred(installedSuccessfully ? .success : .error)
                 }
             }
-            .onChange(of: isShowingOTAAlert) { new in
-                if !new {
-                    withAnimation {
-                        isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device)
-                    }
+            
                 }
             }
             .onAppear {
                 if device.isSupported {
                     withAnimation {
-                        isShowingOTAAlert = device.supportsOTA
-                        if !isShowingOTAAlert { isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device) }
+                        isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device)
                     }
                 }
                 Task {
                     await getUpdatedTrollStore()
                 }
             }
-            .onChange(of: isShowingOTAAlert) { _ in
-                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && device.supportsOTA {
-                    withAnimation {
-                        isShowingMDCAlert = true
-                    }
+            
                 }
             }
         }
@@ -185,6 +172,7 @@ struct MainView_Previews: PreviewProvider {
         MainView()
     }
 }
+
 
 
 

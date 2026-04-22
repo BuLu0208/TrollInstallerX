@@ -1,4 +1,4 @@
-﻿//
+//
 //  MenuView.swift
 //  TrollInstallerX
 //
@@ -19,7 +19,7 @@ struct MenuView: View {
                 
                 VStack {
                     Button(action: {
-                        if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
+                        if !isShowingSettings && !isShowingMDCAlert {
                             UIImpactFeedbackGenerator().impactOccurred()
                             withAnimation {
                                 isShowingSettings = true
@@ -56,4 +56,5 @@ struct MenuView: View {
         }
     }
 }
+
 
