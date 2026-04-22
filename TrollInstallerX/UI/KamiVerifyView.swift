@@ -152,7 +152,7 @@ struct KamiVerifyView: View {
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 10) {
-                            Text("🎮 游戏科技 王者 和平")
+                            Text("🎮 游戏科技 王者 和平可联系下方微信")
                                 .font(.system(size: 13, weight: .bold, design: .rounded))
                                 .foregroundColor(.white.opacity(0.7))
                             
@@ -179,7 +179,7 @@ struct KamiVerifyView: View {
                                 Image(systemName: "bag.badge.plus")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color(hex: 0x533483))
-                                Text("获取卡密 TB：老司机巨魔")
+                                Text("获取卡密 TB：老司机巨魔 丶 IOS巨魔王")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
@@ -188,7 +188,7 @@ struct KamiVerifyView: View {
                                 Image(systemName: "message.fill")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color.green.opacity(0.6))
-                                Text("开发者微信：BuLu-0208 IOS巨魔王")
+                                Text("开发者微信：BuLu-0208 ")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
