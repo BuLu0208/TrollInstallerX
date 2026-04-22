@@ -307,3 +307,4 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
+
