@@ -22,7 +22,6 @@ struct MainView: View {
     @State private var installedSuccessfully = false
     @State private var installationFinished = false
     
-    // Best way to show the alert midway through doInstall()
     @ObservedObject var helperView = HelperAlert.shared
     
     var body: some View {
@@ -71,8 +70,7 @@ struct MainView: View {
                                     .padding()
                                     .frame(maxWidth: geometry.size.width / 1.2)
                                     .frame(maxHeight: geometry.size.height / 1.75)
-                            }
-                            else {
+                            } else {
                                 Button(action: {
                                     if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
                                         UIImpactFeedbackGenerator().impactOccurred()
@@ -82,11 +80,11 @@ struct MainView: View {
                                     }
                                 }, label: {
                                     Text(device.isSupported ? "安装 TrollStore" : "不支持")
-                                            .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                            .foregroundColor(.white)
-                                            .padding()
-                                            .frame(maxWidth: geometry.size.width / 1.2)
-                                            .frame(maxHeight: 60)
+                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .frame(maxWidth: geometry.size.width / 1.2)
+                                        .frame(maxHeight: 60)
                                 })
                                 .frame(maxWidth: geometry.size.width / 1.2)
                                 .frame(maxHeight: 60)
@@ -99,35 +97,34 @@ struct MainView: View {
                         }
                         .padding()
                         .disabled(!device.isSupported)
-                        
-                        
-                        }
-                        .blur(radius: (isShowingMDCAlert || isShowingOTAAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
                     }
+                    .blur(radius: (isShowingMDCAlert || isShowingOTAAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
                 }
+                
                 if isShowingOTAAlert {
                     PopupView(isShowingAlert: $isShowingOTAAlert, content: {
                         TrollHelperOTAView(arm64eVersion: .constant(false))
                     })
                 }
+                
                 if isShowingMDCAlert {
                     PopupView(isShowingAlert: $isShowingMDCAlert, shouldAllowDismiss: false, content: {
                         UnsandboxView(isShowingMDCAlert: $isShowingMDCAlert)
                     })
                 }
+                
                 if isShowingSettings {
                     PopupView(isShowingAlert: $isShowingSettings, content: {
                         SettingsView(device: device)
                     })
                 }
-            
-            if helperView.showAlert {
-                PopupView(isShowingAlert: $isShowingHelperAlert, shouldAllowDismiss: false, content: {
-                    PersistenceHelperView(isShowingHelperAlert: $isShowingHelperAlert, allowNoPersistenceHelper: device.supportsDirectInstall)
+                
+                if helperView.showAlert {
+                    PopupView(isShowingAlert: $isShowingHelperAlert, shouldAllowDismiss: false, content: {
+                        PersistenceHelperView(isShowingHelperAlert: $isShowingHelperAlert, allowNoPersistenceHelper: device.supportsDirectInstall)
                     })
                 }
             }
-            // Hacky, but it works (can't pass helperView.showAlert as a binding variable)
             .onChange(of: helperView.showAlert) { new in
                 if new {
                     withAnimation {
@@ -172,7 +169,7 @@ struct MainView: View {
                 }
             }
             .onChange(of: isShowingOTAAlert) { _ in
-                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && !isShowingOTAAlert && device.supportsOTA { // User has just dismissed alert
+                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && !isShowingOTAAlert && device.supportsOTA {
                     withAnimation {
                         isShowingMDCAlert = true
                     }
@@ -181,7 +178,6 @@ struct MainView: View {
         }
     }
 }
-
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
