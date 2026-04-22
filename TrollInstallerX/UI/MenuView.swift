@@ -8,7 +8,7 @@ import SwiftUI
 struct MenuView: View {
     @Binding var isShowingSettings: Bool
     @Binding var isShowingMDCAlert: Bool
-    @Binding var isShowingOTAAlert: Bool
+
     let device: Device
     
     var body: some View {
@@ -56,3 +56,4 @@ struct MenuView: View {
         }
     }
 }
+

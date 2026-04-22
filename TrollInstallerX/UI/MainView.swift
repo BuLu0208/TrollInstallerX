@@ -14,7 +14,7 @@ struct MainView: View {
     @State private var device: Device = Device()
     
     @State private var isShowingMDCAlert = false
-    @State private var isShowingOTAAlert = false
+    
     @State private var isShowingHelperAlert = false
     
     @State private var isShowingSettings = false
@@ -51,7 +51,7 @@ struct MainView: View {
                         .padding(.vertical)
                         
                         if !isInstalling {
-                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, isShowingOTAAlert: $isShowingOTAAlert, device: device)
+                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, device: device)
                                 .frame(maxWidth: geometry.size.width / 1.2, maxHeight: geometry.size.height / 4)
                                 .transition(.scale)
                                 .padding()
@@ -99,7 +99,7 @@ struct MainView: View {
                         .padding()
                         .disabled(!device.isSupported)
                     }
-                    .blur(radius: (isShowingMDCAlert || isShowingOTAAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
+                    .blur(radius: (isShowingMDCAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
                 }
                 
                 if isShowingOTAAlert {
@@ -170,7 +170,7 @@ struct MainView: View {
                 }
             }
             .onChange(of: isShowingOTAAlert) { _ in
-                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && !isShowingOTAAlert && device.supportsOTA {
+                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && device.supportsOTA {
                     withAnimation {
                         isShowingMDCAlert = true
                     }
@@ -185,5 +185,6 @@ struct MainView_Previews: PreviewProvider {
         MainView()
     }
 }
+
 
 
