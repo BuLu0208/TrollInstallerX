@@ -1,5 +1,5 @@
 ﻿//
-//  LaunchView.swift
+//  MainView.swift
 //  TrollInstallerX
 //
 //  Created by Alfie on 22/03/2024.
@@ -14,10 +14,11 @@ struct MainView: View {
     @State private var device: Device = Device()
     
     @State private var isShowingMDCAlert = false
+    @State private var isShowingOTAAlert = false
     @State private var isShowingHelperAlert = false
     
     @State private var isShowingSettings = false
-        
+    
     @State private var installedSuccessfully = false
     @State private var installationFinished = false
     
@@ -36,17 +37,21 @@ struct MainView: View {
                                 .resizable()
                                 .cornerRadius(22)
                                 .frame(maxWidth: 100, maxHeight: 100)
-                                .shadow(radius: 10)
-                            Text("免挂梯子巨魔安装器")`n                                .font(.system(size: 28, weight: .bold, design: .rounded))`n                                .foregroundColor(.white)
-                            Text("寮€鍙戣€咃細Alfie CG")
-                                .font(.system(size: 17, weight: .semibold, design: .rounded))
-                                .foregroundColor(.white.opacity(0.5))
-                            Text("iOS 14.0 - 16.6.1 通用安装")`n                                .font(.system(size: 12, weight: .medium, design: .rounded))`n                                .foregroundColor(.white.opacity(0.35))
+                                .shadow(color: Color(hex: 0x533483).opacity(0.4), radius: 15)
+                            Text("免挂梯子巨魔安装器")
+                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .foregroundColor(.white)
+                            Text("TB：老司机巨魔 | 微信：BuLu-0208")
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundColor(.white.opacity(0.4))
+                            Text("iOS 14.0 - 16.6.1 通用安装")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundColor(.white.opacity(0.35))
                         }
                         .padding(.vertical)
                         
                         if !isInstalling {
-                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, device: device)
+                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, isShowingOTAAlert: $isShowingOTAAlert, device: device)
                                 .frame(maxWidth: geometry.size.width / 1.2, maxHeight: geometry.size.height / 4)
                                 .transition(.scale)
                                 .padding()
@@ -55,7 +60,8 @@ struct MainView: View {
                         }
                         
                         ZStack {
-                            RoundedRectangle(cornerRadius: 20).foregroundColor(Color.white.opacity(0.08))
+                            RoundedRectangle(cornerRadius: 16)
+                                .foregroundColor(.white.opacity(0.06))
                                 .frame(maxWidth: geometry.size.width / 1.2)
                                 .frame(maxHeight: isInstalling ? geometry.size.height / 1.75 : 60)
                                 .transition(.scale)
@@ -68,22 +74,27 @@ struct MainView: View {
                             }
                             else {
                                 Button(action: {
-                                    if !isShowingSettings && !isShowingMDCAlert  {
+                                    if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
                                         UIImpactFeedbackGenerator().impactOccurred()
                                         withAnimation {
                                             isInstalling.toggle()
                                         }
                                     }
                                 }, label: {
-                                    Text(device.isSupported ? "瀹夎 TrollStore" : "涓嶆敮鎸?)
+                                    Text(device.isSupported ? "安装 TrollStore" : "不支持")
                                             .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                            .foregroundColor(device.isSupported ? .white : .secondary)
+                                            .foregroundColor(.white)
                                             .padding()
                                             .frame(maxWidth: geometry.size.width / 1.2)
                                             .frame(maxHeight: 60)
                                 })
                                 .frame(maxWidth: geometry.size.width / 1.2)
                                 .frame(maxHeight: 60)
+                                .background(
+                                    LinearGradient(colors: [Color(hex: 0x0f3460), Color(hex: 0x533483)], startPoint: .leading, endPoint: .trailing)
+                                )
+                                .cornerRadius(16)
+                                .shadow(color: Color(hex: 0x533483).opacity(0.3), radius: 15)
                             }
                         }
                         .padding()
@@ -91,10 +102,14 @@ struct MainView: View {
                         
                         
                         }
-                        .blur(radius: (isShowingMDCAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
+                        .blur(radius: (isShowingMDCAlert || isShowingOTAAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
                     }
                 }
-
+                if isShowingOTAAlert {
+                    PopupView(isShowingAlert: $isShowingOTAAlert, content: {
+                        TrollHelperOTAView(arm64eVersion: .constant(false))
+                    })
+                }
                 if isShowingMDCAlert {
                     PopupView(isShowingAlert: $isShowingMDCAlert, shouldAllowDismiss: false, content: {
                         UnsandboxView(isShowingMDCAlert: $isShowingMDCAlert)
@@ -105,8 +120,6 @@ struct MainView: View {
                         SettingsView(device: device)
                     })
                 }
-                
-
             
             if helperView.showAlert {
                 PopupView(isShowingAlert: $isShowingHelperAlert, shouldAllowDismiss: false, content: {
@@ -140,22 +153,34 @@ struct MainView: View {
                     UINotificationFeedbackGenerator().notificationOccurred(installedSuccessfully ? .success : .error)
                 }
             }
-            }
+            .onChange(of: isShowingOTAAlert) { new in
+                if !new {
+                    withAnimation {
+                        isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device)
+                    }
+                }
             }
             .onAppear {
                 if device.isSupported {
                     withAnimation {
-                        isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device) }
+                        isShowingOTAAlert = device.supportsOTA
+                        if !isShowingOTAAlert { isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device) }
                     }
                 }
                 Task {
                     await getUpdatedTrollStore()
                 }
             }
-            }
+            .onChange(of: isShowingOTAAlert) { _ in
+                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && !isShowingOTAAlert && device.supportsOTA { // User has just dismissed alert
+                    withAnimation {
+                        isShowingMDCAlert = true
+                    }
+                }
             }
         }
     }
+}
 
 
 struct MainView_Previews: PreviewProvider {
@@ -163,14 +188,3 @@ struct MainView_Previews: PreviewProvider {
         MainView()
     }
 }
-
-
-
-
-
-
-
-
-
-
-
