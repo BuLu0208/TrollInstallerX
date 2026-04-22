@@ -1,4 +1,4 @@
-//
+﻿//
 //  MenuView.swift
 //  TrollInstallerX
 //
@@ -8,7 +8,7 @@ import SwiftUI
 struct MenuView: View {
     @Binding var isShowingSettings: Bool
     @Binding var isShowingMDCAlert: Bool
-
+    @Binding var isShowingOTAAlert: Bool
     let device: Device
     
     var body: some View {
@@ -19,7 +19,7 @@ struct MenuView: View {
                 
                 VStack {
                     Button(action: {
-                        if !isShowingSettings && !isShowingMDCAlert {
+                        if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
                             UIImpactFeedbackGenerator().impactOccurred()
                             withAnimation {
                                 isShowingSettings = true
@@ -56,5 +56,3 @@ struct MenuView: View {
         }
     }
 }
-
-
