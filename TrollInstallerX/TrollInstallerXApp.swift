@@ -1,4 +1,4 @@
-//
+﻿//
 //  TrollInstallerXApp.swift
 //  TrollInstallerX
 //
@@ -9,11 +9,19 @@ import SwiftUI
 
 @main
 struct TrollInstallerXApp: App {
+    @AppStorage("kami_verified") private var isVerified: Bool = false
+    
     var body: some Scene {
         WindowGroup {
-            MainView()
-                // Force status bar to be white
+            if isVerified {
+                MainView()
+                    .preferredColorScheme(.dark)
+            } else {
+                KamiVerifyView(onVerified: {
+                    isVerified = true
+                })
                 .preferredColorScheme(.dark)
+            }
         }
     }
 }
