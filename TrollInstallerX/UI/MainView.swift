@@ -14,7 +14,6 @@ struct MainView: View {
     @State private var device: Device = Device()
     
     @State private var isShowingMDCAlert = false
-    @State private var isShowingOTAAlert = false
     @State private var isShowingHelperAlert = false
     
     @State private var isShowingSettings = false
@@ -47,7 +46,7 @@ struct MainView: View {
                         .padding(.vertical)
                         
                         if !isInstalling {
-                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, isShowingOTAAlert: $isShowingOTAAlert, device: device)
+                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, device: device)
                                 .frame(maxWidth: geometry.size.width / 1.2, maxHeight: geometry.size.height / 4)
                                 .transition(.scale)
                                 .padding()
@@ -69,7 +68,7 @@ struct MainView: View {
                             }
                             else {
                                 Button(action: {
-                                    if !!isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
+                                    if !isShowingSettings && !isShowingMDCAlert  {
                                         UIImpactFeedbackGenerator().impactOccurred()
                                         withAnimation {
                                             isInstalling.toggle()
@@ -141,12 +140,7 @@ struct MainView: View {
                     UINotificationFeedbackGenerator().notificationOccurred(installedSuccessfully ? .success : .error)
                 }
             }
-            .onChange(of: isShowingOTAAlert) { new in
-                if !new {
-                    withAnimation {
-                        isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device)
-                    }
-                }
+            }
             }
             .onAppear {
                 if device.isSupported {
@@ -158,12 +152,7 @@ struct MainView: View {
                     await getUpdatedTrollStore()
                 }
             }
-            .onChange(of: isShowingOTAAlert) { _ in
-                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && !device.supportsOTA { // User has just dismissed alert
-                    withAnimation {
-                        isShowingMDCAlert = true
-                    }
-                }
+            }
             }
         }
     }
@@ -174,6 +163,8 @@ struct MainView_Previews: PreviewProvider {
         MainView()
     }
 }
+
+
 
 
 
