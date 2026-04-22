@@ -104,7 +104,7 @@ struct MainView: View {
                 }
                 
                 if isShowingOTAAlert && !isShowingCredits {
-                    PopupView(isShowingAlert: $isShowingOTAAlert $isShowingOTAAlert, content: {
+                    PopupView(isShowingAlert: $isShowingOTAAlert, content: {
                         TrollHelperOTAView(arm64eVersion: .constant(false))
                     })
                 }

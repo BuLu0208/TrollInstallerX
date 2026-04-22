@@ -11,13 +11,13 @@ struct MenuView: View {
     @Binding var isShowingOTAAlert: Bool
     @Binding var isShowingCredits: Bool
     let device: Device
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
                     .foregroundColor(Color.white.opacity(0.08))
-                
+
                 VStack {
                     Button(action: {
                         if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
@@ -41,9 +41,9 @@ struct MenuView: View {
                                 }
                             )
                             .foregroundColor(device.isSupported ? .white.opacity(0.85) : .secondary)
-                            
+
                             Spacer()
-                            
+
                             Image(systemName: "chevron.right")
                                 .font(.body)
                                 .foregroundColor(.white.opacity(0.3))
@@ -63,7 +63,7 @@ struct MenuView: View {
                         HStack {
                             Label(
                                 title: {
-                                    Text("\u4f7f\u7528\u6559\u7a0b")
+                                    Text("使用教程")
                                         .font(.system(size: 17, weight: .regular, design: .rounded))
                                 },
                                 icon: { Image(systemName: "book")
