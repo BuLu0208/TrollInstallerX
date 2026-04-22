@@ -11,11 +11,11 @@ struct UnsandboxView: View {
     @Binding var isShowingMDCAlert: Bool
     var body: some View {            
         VStack {
-                Text("解除沙盒")
+                Text("解除沙盒记得点好！")
                     .font(.system(size: 23, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
                     .padding()
-                Text("TrollInstallerX 使用100%可靠的 MacDirtyCow 漏洞来解除沙盒并复制内核缓存。按下下方的按钮运行该漏洞利用程序-您只需要这样操作一次。")
+                Text(" 点击下面的解除沙盒然后记得点好！不要点错这样最方便快速度就可以安装上巨魔。")
                     .font(.system(size: 16, weight: .regular, design: .rounded))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.white)
