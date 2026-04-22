@@ -1,4 +1,4 @@
-// !$*UTF8*$!
+﻿// !$*UTF8*$!
 {
 	archiveVersion = 1;
 	classes = {
@@ -41,7 +41,6 @@
 		319CE2992BB31A8500189EDE /* CreditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319CE2982BB31A8500189EDE /* CreditsView.swift */; };
 		319CE29B2BB31ABB00189EDE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319CE29A2BB31ABB00189EDE /* SettingsView.swift */; };
 		319CE29D2BB31ED400189EDE /* UnsandboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319CE29C2BB31ED400189EDE /* UnsandboxView.swift */; };
-		319CE29F2BB31F7300189EDE /* TrollHelperOTAView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319CE29E2BB31F7300189EDE /* TrollHelperOTAView.swift */; };
 		31A6FFF52BB9EA30008F69F8 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A6FFF42BB9EA30008F69F8 /* Defaults.swift */; };
 		31ABE97D2BAD953F003C35E0 /* escalate.c in Sources */ = {isa = PBXBuildFile; fileRef = 31ABE97C2BAD953F003C35E0 /* escalate.c */; };
 		31ABE9812BAD9821003C35E0 /* libxpf.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 316661D02BAD9221009D22D8 /* libxpf.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -170,7 +169,6 @@
 		319CE2982BB31A8500189EDE /* CreditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsView.swift; sourceTree = "<group>"; };
 		319CE29A2BB31ABB00189EDE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		319CE29C2BB31ED400189EDE /* UnsandboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsandboxView.swift; sourceTree = "<group>"; };
-		319CE29E2BB31F7300189EDE /* TrollHelperOTAView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrollHelperOTAView.swift; sourceTree = "<group>"; };
 		31A6FFF42BB9EA30008F69F8 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		31ABE97B2BAD953F003C35E0 /* escalate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = escalate.h; sourceTree = "<group>"; };
 		31ABE97C2BAD953F003C35E0 /* escalate.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = escalate.c; sourceTree = "<group>"; };
@@ -284,7 +282,6 @@
 			children = (
 				31ABE9822BAD997C003C35E0 /* MainView.swift */,
 				319CE29A2BB31ABB00189EDE /* SettingsView.swift */,
-				319CE29E2BB31F7300189EDE /* TrollHelperOTAView.swift */,
 				319C8F8D2BB8BAD200E19B34 /* PersistenceHelperView.swift */,
 				319CE29C2BB31ED400189EDE /* UnsandboxView.swift */,
 				319CE2982BB31A8500189EDE /* CreditsView.swift */,
@@ -739,7 +736,6 @@
 				316661992BAD918E009D22D8 /* info.c in Sources */,
 				316661442BAD889C009D22D8 /* Version.swift in Sources */,
 				316661402BAD862C009D22D8 /* Device.swift in Sources */,
-				319CE29F2BB31F7300189EDE /* TrollHelperOTAView.swift in Sources */,
 				319C8F852BB8A50600E19B34 /* update.m in Sources */,
 			31KAMI00100000000000001 /* KamiVerifyView.swift in Sources */,
 				316661542BAD8BB8009D22D8 /* helpers.m in Sources */,
@@ -980,3 +976,4 @@
 	};
 	rootObject = 316661212BAD8465009D22D8 /* Project object */;
 }
+
