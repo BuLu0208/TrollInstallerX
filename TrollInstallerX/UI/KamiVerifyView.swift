@@ -1,4 +1,4 @@
-//
+﻿//
 //  KamiVerifyView.swift
 //  TrollInstallerX
 //
@@ -28,6 +28,7 @@ struct KamiVerifyView: View {
     }
     
     var body: some View {
+    @FocusState private var isFocused: Bool = false
         GeometryReader { geometry in
             ZStack {
                 // 深色渐变背景
@@ -208,7 +209,7 @@ struct KamiVerifyView: View {
                     Spacer()
                 }
             }
-            .onAppear {
+            .onTapGesture { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil) }.onAppear {
                 withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
                     shimmer.toggle()
                 }
@@ -274,4 +275,6 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
+
+
 
