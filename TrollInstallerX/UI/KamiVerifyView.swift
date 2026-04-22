@@ -1,4 +1,4 @@
-﻿//
+//
 //  KamiVerifyView.swift
 //  TrollInstallerX
 //
@@ -181,7 +181,7 @@ struct KamiVerifyView: View {
                                 Image(systemName: "bag.badge.plus")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color(hex: 0x533483))
-                                Text("获取卡密 TB：老司机巨魔 丶 IOS巨魔王")
+                                Text("获取卡密 TB：老司机巨魔 丸 IOS巨魔王")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
