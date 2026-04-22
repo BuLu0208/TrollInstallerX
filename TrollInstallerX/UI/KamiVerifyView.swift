@@ -103,7 +103,7 @@ struct KamiVerifyView: View {
     
     private func verifyKami() {
         let kami = kamiInput.trimmingCharacters(in: .whitespaces)
-        guard !kami.isEmpty {
+        guard !kami.isEmpty else {
             errorMessage = "请输入卡密！"
             return
         }
@@ -159,3 +159,4 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
+
