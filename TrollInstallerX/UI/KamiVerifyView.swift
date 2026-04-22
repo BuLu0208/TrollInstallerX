@@ -105,7 +105,7 @@ struct KamiVerifyView: View {
                                 )
                                 .autocapitalization(.none)
                                 .disableAutocorrection(true)
-                                .font(.system(size: 15, design: .rounded, weight: .medium))
+                                .font(.system(size: 15, weight: .medium, design: .rounded))
                                 .foregroundColor(.white)
                         }
                         .padding(.horizontal, 24)
