@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-struct MenuView: View {
+struct MenuView: View {`n    @Binding var isShowingOTAAlert: Bool
     @Binding var isShowingSettings: Bool
     @Binding var isShowingMDCAlert: Bool
     @Binding var isShowingOTAAlert: Bool
@@ -19,7 +19,7 @@ struct MenuView: View {
                 
                 VStack {
                     Button(action: {
-                        if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
+                        if !isShowingSettings && !isShowingMDCAlert {
                             UIImpactFeedbackGenerator().impactOccurred()
                             withAnimation {
                                 isShowingSettings = true
@@ -56,3 +56,4 @@ struct MenuView: View {
         }
     }
 }
+
