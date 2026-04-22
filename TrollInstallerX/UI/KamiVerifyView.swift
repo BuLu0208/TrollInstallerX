@@ -97,7 +97,7 @@ struct KamiVerifyView: View {
                                 )
                                 .autocapitalization(.none)
                                 .disableAutocorrection(true)
-                                .font(.system(size: 15, design: .rounded, weight: .medium))
+                                .font(.system(size: 15, weight: .medium, design: .rounded))
                                 .foregroundColor(.white)
                         }
                         .padding(.horizontal, 24)
@@ -220,7 +220,7 @@ struct KamiVerifyView: View {
                 }
             }
             .onTapGesture {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil)
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
             .onAppear {
                 withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
@@ -288,3 +288,4 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
+
