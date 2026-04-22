@@ -1,4 +1,4 @@
-//
+﻿//
 //  MainView.swift
 //  TrollInstallerX
 //
@@ -43,7 +43,8 @@ struct MainView: View {
                             Text("开发者 TB：老司机巨魔 | 微信：BuLu-0208")
                                 .font(.system(size: 13, weight: .medium, design: .rounded))
                                 .foregroundColor(.white.opacity(0.4))
-                            Text("TB：IOS巨魔王 | 微信：jiesuo66688")`n                                Text("iOS 14.0 - 16.6.1 通用安装")
+                                Text("TB：IOS巨魔王 | 微信：jiesuo66688")
+                                Text("iOS 14.0 - 16.6.1 通用安装")
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
                                 .foregroundColor(.white.opacity(0.35))
                         }
@@ -184,4 +185,5 @@ struct MainView_Previews: PreviewProvider {
         MainView()
     }
 }
+
 
