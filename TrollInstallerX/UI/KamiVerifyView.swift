@@ -192,7 +192,7 @@ struct KamiVerifyView: View {
                         .padding(.bottom, 24)
                     }
                     .frame(maxWidth: geometry.size.width / 1.15)
-                    .background(.ultraThinMaterial)
+                    .background(Color.white.opacity(0.06))
                     .background(Color.black.opacity(0.3))
                     .cornerRadius(20)
                     .shadow(color: .black.opacity(0.3), radius: 20)
@@ -274,3 +274,4 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
+
