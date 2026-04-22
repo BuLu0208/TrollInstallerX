@@ -10,6 +10,7 @@ struct KamiVerifyView: View {
     @State private var isLoading: Bool = false
     @State private var errorMessage: String = ""
     @State private var shimmer: Bool = false
+    @State private var showCopyAlert: Bool = false
     
     let onVerified: () -> Void
     
@@ -184,22 +185,32 @@ struct KamiVerifyView: View {
                                     .foregroundColor(.white.opacity(0.55))
                             }
                             
-                            HStack(spacing: 6) {
-                                Image(systemName: "message.fill")
-                                    .font(.system(size: 11))
-                                    .foregroundColor(Color.green.opacity(0.6))
-                                Text("开发者微信：BuLu-0208 ")
-                                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.55))
+                            Button(action: {
+                                UIPasteboard.general.string = "BuLu-0208"
+                                showCopyAlert = true
+                            }) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "message.fill")
+                                        .font(.system(size: 11))
+                                        .foregroundColor(Color.green.opacity(0.6))
+                                    Text("开发者微信：BuLu-0208（点击复制）")
+                                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                                        .foregroundColor(.white.opacity(0.55))
+                                }
                             }
                             
-                            HStack(spacing: 6) {
-                                Image(systemName: "headphones")
-                                    .font(.system(size: 11))
-                                    .foregroundColor(Color.orange.opacity(0.6))
-                                Text("联系微信：jiesuo66688")
-                                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.55))
+                            Button(action: {
+                                UIPasteboard.general.string = "jiesuo66688"
+                                showCopyAlert = true
+                            }) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "headphones")
+                                        .font(.system(size: 11))
+                                        .foregroundColor(Color.orange.opacity(0.6))
+                                    Text("联系微信：jiesuo66688（点击复制）")
+                                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                                        .foregroundColor(.white.opacity(0.55))
+                                }
                             }
                         }
                         .padding(.bottom, 24)
@@ -218,6 +229,14 @@ struct KamiVerifyView: View {
                     
                     Spacer()
                 }
+            }
+            .alert("已复制", isPresented: $showCopyAlert) {
+                Button("前往微信搜索添加", role: .none) {
+                    if let url = URL(string: "weixin://"), UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                Button("好的", role: .cancel) {}
             }
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -288,4 +307,3 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
-
