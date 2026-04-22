@@ -10,7 +10,8 @@ struct KamiVerifyView: View {
     @State private var isLoading: Bool = false
     @State private var errorMessage: String = ""
     @State private var shimmer: Bool = false
-    @State private var showCopyAlert: Bool = false
+    @State private var copiedMsg: String = ""
+    @State private var copiedTimer: Timer?
     
     let onVerified: () -> Void
     
@@ -187,7 +188,7 @@ struct KamiVerifyView: View {
                             
                             Button(action: {
                                 UIPasteboard.general.string = "BuLu-0208"
-                                showCopyAlert = true
+                                showCopied(msg: "BuLu-0208")
                             }) {
                                 HStack(spacing: 6) {
                                     Image(systemName: "message.fill")
@@ -201,7 +202,7 @@ struct KamiVerifyView: View {
                             
                             Button(action: {
                                 UIPasteboard.general.string = "jiesuo66688"
-                                showCopyAlert = true
+                                showCopied(msg: "jiesuo66688")
                             }) {
                                 HStack(spacing: 6) {
                                     Image(systemName: "headphones")
@@ -212,6 +213,13 @@ struct KamiVerifyView: View {
                                         .foregroundColor(.white.opacity(0.55))
                                 }
                             }
+                        }
+                        
+                        if !copiedMsg.isEmpty {
+                            Text(copiedMsg)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(Color.green.opacity(0.9))
+                                .transition(.opacity)
                         }
                         .padding(.bottom, 24)
                     }
@@ -230,14 +238,6 @@ struct KamiVerifyView: View {
                     Spacer()
                 }
             }
-            .alert("已复制", isPresented: $showCopyAlert) {
-                Button("前往微信搜索添加", role: .none) {
-                    if let url = URL(string: "weixin://"), UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(url)
-                    }
-                }
-                Button("好的", role: .cancel) {}
-            }
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
@@ -245,6 +245,16 @@ struct KamiVerifyView: View {
                 withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
                     shimmer.toggle()
                 }
+            }
+        }
+    }
+    
+    private func showCopied(msg: String) {
+        copiedMsg = "已复制 \(msg)，前往微信搜索添加"
+        copiedTimer?.invalidate()
+        copiedTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+            DispatchQueue.main.async {
+                copiedMsg = ""
             }
         }
     }
@@ -307,4 +317,3 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
-
