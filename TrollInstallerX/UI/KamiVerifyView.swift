@@ -10,8 +10,6 @@ struct KamiVerifyView: View {
     @State private var isLoading: Bool = false
     @State private var errorMessage: String = ""
     @State private var shimmer: Bool = false
-    @State private var copiedMsg: String = ""
-    @State private var copiedTimer: Timer?
     
     let onVerified: () -> Void
     
@@ -154,7 +152,7 @@ struct KamiVerifyView: View {
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 10) {
-                            Text("🎮 游戏科技 王者 和平可联系下方微信")
+                            Text("有问题联系下方微信备注问题 没事别添加！")
                                 .font(.system(size: 13, weight: .bold, design: .rounded))
                                 .foregroundColor(.white.opacity(0.7))
                             
@@ -181,46 +179,28 @@ struct KamiVerifyView: View {
                                 Image(systemName: "bag.badge.plus")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color(hex: 0x533483))
-                                Text("获取卡密 TB：老司机巨魔 丸 IOS巨魔王")
+                                Text("获取卡密 TB：老司机巨魔 丶 IOS巨魔王")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
                             
-                            Button(action: {
-                                UIPasteboard.general.string = "BuLu-0208"
-                                showCopied(msg: "BuLu-0208")
-                            }) {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "message.fill")
-                                        .font(.system(size: 11))
-                                        .foregroundColor(Color.green.opacity(0.6))
-                                    Text("开发者微信：BuLu-0208（点击复制）")
-                                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                                        .foregroundColor(.white.opacity(0.55))
-                                }
+                            HStack(spacing: 6) {
+                                Image(systemName: "message.fill")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Color.green.opacity(0.6))
+                                Text("开发者微信：BuLu-0208 ")
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.55))
                             }
                             
-                            Button(action: {
-                                UIPasteboard.general.string = "jiesuo66688"
-                                showCopied(msg: "jiesuo66688")
-                            }) {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "headphones")
-                                        .font(.system(size: 11))
-                                        .foregroundColor(Color.orange.opacity(0.6))
-                                    Text("联系微信：jiesuo66688（点击复制）")
-                                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                                        .foregroundColor(.white.opacity(0.55))
-                                }
+                            HStack(spacing: 6) {
+                                Image(systemName: "headphones")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Color.orange.opacity(0.6))
+                                Text("联系微信：jiesuo66688")
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.55))
                             }
-                        }
-                        
-                        if !copiedMsg.isEmpty {
-                            Text(copiedMsg)
-                                .font(.system(size: 13, weight: .semibold, design: .rounded))
-                                .foregroundColor(Color.green.opacity(0.9))
-                                .transition(.opacity)
-                                .padding(.bottom, 24)
                         }
                         .padding(.bottom, 24)
                     }
@@ -246,16 +226,6 @@ struct KamiVerifyView: View {
                 withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
                     shimmer.toggle()
                 }
-            }
-        }
-    }
-    
-    private func showCopied(msg: String) {
-        copiedMsg = "已复制 \(msg)，前往微信搜索添加"
-        copiedTimer?.invalidate()
-        copiedTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-            DispatchQueue.main.async {
-                copiedMsg = ""
             }
         }
     }
