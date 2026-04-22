@@ -126,8 +126,6 @@ struct MainView: View {
                         CreditsView()
                     })
                 }
-                    })
-                }
                 
                 if helperView.showAlert {
                     PopupView(isShowingAlert: $isShowingHelperAlert, shouldAllowDismiss: false, content: {
