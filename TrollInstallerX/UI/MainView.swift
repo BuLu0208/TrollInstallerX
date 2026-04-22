@@ -1,4 +1,4 @@
-//
+﻿//
 //  LaunchView.swift
 //  TrollInstallerX
 //
@@ -18,8 +18,7 @@ struct MainView: View {
     @State private var isShowingHelperAlert = false
     
     @State private var isShowingSettings = false
-    @State private var isShowingCredits = false
-    
+        
     @State private var installedSuccessfully = false
     @State private var installationFinished = false
     
@@ -30,7 +29,7 @@ struct MainView: View {
         GeometryReader { geometry in
             ZStack {
                 ZStack {
-                    LinearGradient(colors: [Color(hex: 0x0482d1), Color(hex: 0x0566ed)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    LinearGradient(colors: [Color(hex: 0x1a1a2e), Color(hex: 0x16213e), Color(hex: 0x0f3460)], startPoint: .top, endPoint: .bottom)
                         .ignoresSafeArea()
                     VStack {
                         VStack {
@@ -39,20 +38,16 @@ struct MainView: View {
                                 .cornerRadius(22)
                                 .frame(maxWidth: 100, maxHeight: 100)
                                 .shadow(radius: 10)
-                            Text("TrollInstallerX")
-                                .font(.system(size: 30, weight: .semibold, design: .rounded))
-                                .foregroundColor(.white)
-                            Text("开发者：Alfie CG")
+                            Text("免挂梯子巨魔安装器")`n                                .font(.system(size: 28, weight: .bold, design: .rounded))`n                                .foregroundColor(.white)
+                            Text("寮€鍙戣€咃細Alfie CG")
                                 .font(.system(size: 17, weight: .semibold, design: .rounded))
                                 .foregroundColor(.white.opacity(0.5))
-                            Text("iOS 14.0 - 16.6.1")
-                                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                                .foregroundColor(.white.opacity(0.5))
+                            Text("iOS 14.0 - 16.6.1 通用安装")`n                                .font(.system(size: 12, weight: .medium, design: .rounded))`n                                .foregroundColor(.white.opacity(0.35))
                         }
                         .padding(.vertical)
                         
                         if !isInstalling {
-                            MenuView(isShowingSettings: $isShowingSettings, isShowingCredits: $isShowingCredits, isShowingMDCAlert: $isShowingMDCAlert, isShowingOTAAlert: $isShowingOTAAlert, device: device)
+                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, isShowingOTAAlert: $isShowingOTAAlert, device: device)
                                 .frame(maxWidth: geometry.size.width / 1.2, maxHeight: geometry.size.height / 4)
                                 .transition(.scale)
                                 .padding()
@@ -61,8 +56,7 @@ struct MainView: View {
                         }
                         
                         ZStack {
-                            RoundedRectangle(cornerRadius: 10)
-                                .foregroundColor(.white.opacity(0.15))
+                            RoundedRectangle(cornerRadius: 20).foregroundColor(Color.white.opacity(0.08))
                                 .frame(maxWidth: geometry.size.width / 1.2)
                                 .frame(maxHeight: isInstalling ? geometry.size.height / 1.75 : 60)
                                 .transition(.scale)
@@ -75,14 +69,14 @@ struct MainView: View {
                             }
                             else {
                                 Button(action: {
-                                    if !isShowingCredits && !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
+                                    if !!isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
                                         UIImpactFeedbackGenerator().impactOccurred()
                                         withAnimation {
                                             isInstalling.toggle()
                                         }
                                     }
                                 }, label: {
-                                    Text(device.isSupported ? "安装 TrollStore" : "不支持")
+                                    Text(device.isSupported ? "瀹夎 TrollStore" : "涓嶆敮鎸?)
                                             .font(.system(size: 20, weight: .semibold, design: .rounded))
                                             .foregroundColor(device.isSupported ? .white : .secondary)
                                             .padding()
@@ -98,14 +92,10 @@ struct MainView: View {
                         
                         
                         }
-                        .blur(radius: (isShowingMDCAlert || isShowingOTAAlert || isShowingSettings || isShowingCredits || helperView.showAlert) ? 10 : 0)
+                        .blur(radius: (isShowingMDCAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
                     }
                 }
-                if isShowingOTAAlert {
-                    PopupView(isShowingAlert: $isShowingOTAAlert, content: {
-                        TrollHelperOTAView(arm64eVersion: .constant(false))
-                    })
-                }
+
                 if isShowingMDCAlert {
                     PopupView(isShowingAlert: $isShowingMDCAlert, shouldAllowDismiss: false, content: {
                         UnsandboxView(isShowingMDCAlert: $isShowingMDCAlert)
@@ -117,11 +107,7 @@ struct MainView: View {
                     })
                 }
                 
-                if isShowingCredits {
-                    PopupView(isShowingAlert: $isShowingCredits, content: {
-                        CreditsView()
-                    })
-                }
+
             
             if helperView.showAlert {
                 PopupView(isShowingAlert: $isShowingHelperAlert, shouldAllowDismiss: false, content: {
@@ -165,8 +151,7 @@ struct MainView: View {
             .onAppear {
                 if device.isSupported {
                     withAnimation {
-                        isShowingOTAAlert = device.supportsOTA
-                        if !isShowingOTAAlert { isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device) }
+                        isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device) }
                     }
                 }
                 Task {
@@ -174,7 +159,7 @@ struct MainView: View {
                 }
             }
             .onChange(of: isShowingOTAAlert) { _ in
-                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && !isShowingOTAAlert && device.supportsOTA { // User has just dismissed alert
+                if !checkForMDCUnsandbox() && MacDirtyCow.supports(device) && !device.supportsOTA { // User has just dismissed alert
                     withAnimation {
                         isShowingMDCAlert = true
                     }
@@ -189,3 +174,12 @@ struct MainView_Previews: PreviewProvider {
         MainView()
     }
 }
+
+
+
+
+
+
+
+
+
