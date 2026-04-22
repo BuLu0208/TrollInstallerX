@@ -1,4 +1,4 @@
-﻿//
+//
 //  KamiVerifyView.swift
 //  TrollInstallerX
 //
@@ -9,6 +9,7 @@ struct KamiVerifyView: View {
     @State private var kamiInput: String = ""
     @State private var isLoading: Bool = false
     @State private var errorMessage: String = ""
+    @State private var shimmer: Bool = false
     
     let onVerified: () -> Void
     
@@ -29,73 +30,187 @@ struct KamiVerifyView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                LinearGradient(colors: [Color(hex: 0x0482d1), Color(hex: 0x0566ed)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .ignoresSafeArea()
+                // 深色渐变背景
+                LinearGradient(
+                    colors: [Color(hex: 0x1a1a2e), Color(hex: 0x16213e), Color(hex: 0x0f3460)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
                 
-                VStack(spacing: 20) {
+                // 背景装饰光晕
+                VStack {
+                    Spacer()
+                    Circle()
+                        .fill(Color(hex: 0x533483).opacity(0.15))
+                        .frame(width: 300, height: 300)
+                        .blur(radius: 80)
+                        .offset(y: -100)
+                    Spacer()
+                }
+                .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
                     Spacer()
                     
-                    Image("Icon")
-                        .resizable()
-                        .cornerRadius(22)
-                        .frame(width: 80, height: 80)
-                        .shadow(radius: 10)
+                    // 顶部图标区
+                    VStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color(hex: 0x533483), Color(hex: 0x0f3460)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 90, height: 90)
+                                .shadow(color: Color(hex: 0x533483).opacity(0.5), radius: 20)
+                            
+                            Image("Icon")
+                                .resizable()
+                                .cornerRadius(20)
+                                .frame(width: 70, height: 70)
+                                .shadow(radius: 5)
+                        }
+                        
+                        Text("免挂梯子巨魔安装器")
+                            .font(.system(size: 22, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                            .shadow(color: Color.white.opacity(0.3), radius: 10)
+                        
+                        Text("iOS 14.0 - 16.6.1 通用安装")
+                            .font(.system(size: 13, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.45))
+                    }
+                    .padding(.bottom, 30)
                     
-                    Text("TrollInstallerX")
-                        .font(.system(size: 24, weight: .semibold, design: .rounded))
-                        .foregroundColor(.white)
-                    
-                    Text("请输入卡密以继续使用")
-                        .font(.system(size: 14, weight: .regular, design: .rounded))
-                        .foregroundColor(.white.opacity(0.6))
-                    
-                    VStack(spacing: 12) {
-                        TextField("请输入卡密", text: $kamiInput)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal, 30)
-                            .autocapitalization(.none)
-                            .disableAutocorrection(true)
-                            .font(.system(size: 16, design: .rounded))
+                    // 毛玻璃卡片
+                    VStack(spacing: 20) {
+                        Text("输入卡密以激活使用")
+                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .foregroundColor(.white.opacity(0.8))
+                            .padding(.top, 24)
+                        
+                        HStack(spacing: 12) {
+                            TextField("请输入卡密", text: $kamiInput)
+                                .textFieldStyle(PlainTextFieldStyle())
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .background(Color.white.opacity(0.08))
+                                .cornerRadius(12)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                                )
+                                .autocapitalization(.none)
+                                .disableAutocorrection(true)
+                                .font(.system(size: 15, design: .rounded, weight: .medium))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal, 24)
                         
                         Button(action: {
                             verifyKami()
                         }) {
-                            HStack {
+                            HStack(spacing: 8) {
                                 if isLoading {
                                     ProgressView()
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                        .scaleEffect(0.8)
+                                        .scaleEffect(0.85)
                                 } else {
-                                    Text("验证")
-                                        .font(.system(size: 17, weight: .semibold, design: .rounded))
+                                    Image(systemName: "shield.checkered")
+                                        .font(.system(size: 16, weight: .semibold))
+                                    Text("验证激活")
+                                        .font(.system(size: 16, weight: .bold, design: .rounded))
                                 }
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 44)
+                            .frame(height: 48)
                             .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.blue.opacity(0.6))
+                                LinearGradient(
+                                    colors: shimmer ? [Color(hex: 0x533483), Color(hex: 0x0f3460)] : [Color(hex: 0x0f3460), Color(hex: 0x533483)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
                             )
+                            .cornerRadius(12)
+                            .shadow(color: Color(hex: 0x533483).opacity(0.4), radius: 15)
                         }
-                        .padding(.horizontal, 30)
+                        .padding(.horizontal, 24)
                         .disabled(isLoading || kamiInput.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .opacity(isLoading || kamiInput.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1.0)
                         
                         if !errorMessage.isEmpty {
-                            Text(errorMessage)
-                                .font(.system(size: 13, weight: .regular, design: .rounded))
-                                .foregroundColor(.red)
-                                .padding(.horizontal, 30)
-                                .transition(.opacity)
+                            HStack(spacing: 6) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .font(.system(size: 12))
+                                Text(errorMessage)
+                                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                            }
+                            .foregroundColor(.red.opacity(0.9))
+                            .padding(.horizontal, 24)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
                         }
+                        
+                        // 分割线
+                        Rectangle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(height: 1)
+                            .padding(.horizontal, 24)
+                        
+                        // 联系方式
+                        VStack(spacing: 10) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "bag.badge.plus")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Color(hex: 0x533483))
+                                Text("获取卡密 TB：老司机巨魔 丶IOS巨魔王")
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.55))
+                            }
+                            
+                            HStack(spacing: 6) {
+                                Image(systemName: "message.fill")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Color.green.opacity(0.6))
+                                Text("开发者微信：BuLu-0208")
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.55))
+                            }
+                            
+                            HStack(spacing: 6) {
+                                Image(systemName: "headphones")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Color.orange.opacity(0.6))
+                                Text("联系微信：jiesuo66688")
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.55))
+                            }
+                        }
+                        .padding(.bottom, 24)
                     }
+                    .frame(maxWidth: geometry.size.width / 1.15)
+                    .background(.ultraThinMaterial)
+                    .background(Color.black.opacity(0.3))
+                    .cornerRadius(20)
+                    .shadow(color: .black.opacity(0.3), radius: 20)
+                    .padding(.horizontal)
+                    
+                    // 底部设备标识
+                    Text("设备标识：\(deviceCode)")
+                        .font(.system(size: 10, weight: .regular, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.2))
+                        .padding(.top, 20)
+                        .padding(.bottom, 16)
                     
                     Spacer()
-                    
-                    Text("设备标识: \(deviceCode)")
-                        .font(.system(size: 11, weight: .regular, design: .monospaced))
-                        .foregroundColor(.white.opacity(0.3))
-                        .padding(.bottom, 20)
+                }
+            }
+            .onAppear {
+                withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
+                    shimmer.toggle()
                 }
             }
         }
@@ -114,7 +229,7 @@ struct KamiVerifyView: View {
         var components = URLComponents(string: "http://124.221.171.80/api.php")!
         components.queryItems = [
             URLQueryItem(name: "api", value: "kmlogon"),
-            URLQueryItem(name: "app", value: "10003"),
+            URLQueryItem(name: "app", value: "10002"),
             URLQueryItem(name: "kami", value: kami),
             URLQueryItem(name: "markcode", value: deviceCode)
         ]
@@ -159,4 +274,3 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
-
