@@ -220,6 +220,7 @@ struct KamiVerifyView: View {
                                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                                 .foregroundColor(Color.green.opacity(0.9))
                                 .transition(.opacity)
+                                .padding(.bottom, 24)
                         }
                         .padding(.bottom, 24)
                     }
