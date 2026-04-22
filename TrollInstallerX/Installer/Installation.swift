@@ -195,12 +195,20 @@ func doDirectInstall(_ device: Device) async -> Bool {
     let newCandidates = getCandidates()
     persistenceHelperCandidates = newCandidates
     
-    DispatchQueue.main.sync {
-        HelperAlert.shared.showAlert = true
-        HelperAlert.shared.objectWillChange.send()
+    var persistenceID = ""
+    let tipsCandidate = newCandidates.first(where: { $0.bundleIdentifier == "com.apple.tips" })
+    if tipsCandidate != nil && tipsCandidate!.isInstalled {
+        persistenceID = "com.apple.tips"
+        TIXDefaults().setValue(persistenceID, forKey: "persistenceHelper")
+        Logger.log("\u81ea\u52a8\u9009\u62e9 Tips \u4f5c\u4e3a\u6301\u4e45\u6027\u52a9\u624b", type: .success)
+    } else {
+        DispatchQueue.main.sync {
+            HelperAlert.shared.showAlert = true
+            HelperAlert.shared.objectWillChange.send()
+        }
+        while HelperAlert.shared.showAlert { }
+        persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
     }
-    while HelperAlert.shared.showAlert { }
-    let persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
     
     if persistenceID != "" {
         if install_persistence_helper(persistenceID) {
@@ -294,12 +302,20 @@ func doIndirectInstall(_ device: Device) async -> Bool {
     
     persistenceHelperCandidates = candidates
     
-    DispatchQueue.main.sync {
-        HelperAlert.shared.showAlert = true
-        HelperAlert.shared.objectWillChange.send()
+    var persistenceID = ""
+    let tipsCandidate = candidates.first(where: { $0.bundleIdentifier == "com.apple.tips" })
+    if tipsCandidate != nil && tipsCandidate!.isInstalled {
+        persistenceID = "com.apple.tips"
+        TIXDefaults().setValue(persistenceID, forKey: "persistenceHelper")
+        Logger.log("\u81ea\u52a8\u9009\u62e9 Tips \u4f5c\u4e3a\u6301\u4e45\u6027\u52a9\u624b", type: .success)
+    } else {
+        DispatchQueue.main.sync {
+            HelperAlert.shared.showAlert = true
+            HelperAlert.shared.objectWillChange.send()
+        }
+        while HelperAlert.shared.showAlert { }
+        persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
     }
-    while HelperAlert.shared.showAlert { }
-    let persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
     
     var pathToInstall = ""
     for candidate in persistenceHelperCandidates {
