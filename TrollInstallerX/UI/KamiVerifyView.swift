@@ -28,10 +28,8 @@ struct KamiVerifyView: View {
     }
     
     var body: some View {
-    @FocusState private var isFocused: Bool = false
         GeometryReader { geometry in
             ZStack {
-                // 深色渐变背景
                 LinearGradient(
                     colors: [Color(hex: 0x1a1a2e), Color(hex: 0x16213e), Color(hex: 0x0f3460)],
                     startPoint: .top,
@@ -39,22 +37,16 @@ struct KamiVerifyView: View {
                 )
                 .ignoresSafeArea()
                 
-                // 背景装饰光晕
-                VStack {
-                    Spacer()
-                    Circle()
-                        .fill(Color(hex: 0x533483).opacity(0.15))
-                        .frame(width: 300, height: 300)
-                        .blur(radius: 80)
-                        .offset(y: -100)
-                    Spacer()
-                }
-                .ignoresSafeArea()
+                Circle()
+                    .fill(Color(hex: 0x533483).opacity(0.15))
+                    .frame(width: 300, height: 300)
+                    .blur(radius: 80)
+                    .offset(y: -100)
+                    .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
                     Spacer()
                     
-                    // 顶部图标区
                     VStack(spacing: 16) {
                         ZStack {
                             Circle()
@@ -80,13 +72,12 @@ struct KamiVerifyView: View {
                             .foregroundColor(.white)
                             .shadow(color: Color.white.opacity(0.3), radius: 10)
                         
-                        Text("iOS 14.0 - 16.6.1 通用安装")
-                            .font(.system(size: 13, weight: .medium, design: .rounded))
-                            .foregroundColor(.white.opacity(0.45))
+                        Text("请输入卡密以激活使用")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.6))
                     }
                     .padding(.bottom, 30)
                     
-                    // 毛玻璃卡片
                     VStack(spacing: 20) {
                         Text("输入卡密以激活使用")
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
@@ -106,7 +97,7 @@ struct KamiVerifyView: View {
                                 )
                                 .autocapitalization(.none)
                                 .disableAutocorrection(true)
-                                .font(.system(size: 15, weight: .medium, design: .rounded))
+                                .font(.system(size: 15, design: .rounded, weight: .medium))
                                 .foregroundColor(.white)
                         }
                         .padding(.horizontal, 24)
@@ -155,19 +146,40 @@ struct KamiVerifyView: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                         }
                         
-                        // 分割线
                         Rectangle()
                             .fill(Color.white.opacity(0.08))
                             .frame(height: 1)
                             .padding(.horizontal, 24)
                         
-                        // 联系方式
+                        VStack(spacing: 10) {
+                            Text("🎮 游戏科技 王者 和平")
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundColor(.white.opacity(0.7))
+                            
+                            Link(destination: URL(string: "https://www.820faka.cn//details/180476F2")!) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "cart.badge.plus")
+                                        .font(.system(size: 11))
+                                        .foregroundColor(Color(hex: 0x533483))
+                                    Text("点此购买卡密")
+                                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                                        .underline()
+                                        .foregroundColor(Color(hex: 0x533483))
+                                }
+                            }
+                        }
+                        
+                        Rectangle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(height: 1)
+                            .padding(.horizontal, 24)
+                        
                         VStack(spacing: 10) {
                             HStack(spacing: 6) {
                                 Image(systemName: "bag.badge.plus")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color(hex: 0x533483))
-                                Text("获取卡密 TB：老司机巨魔 丶IOS巨魔王")
+                                Text("获取卡密 TB：老司机巨魔")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
@@ -176,7 +188,7 @@ struct KamiVerifyView: View {
                                 Image(systemName: "message.fill")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color.green.opacity(0.6))
-                                Text("开发者微信：BuLu-0208")
+                                Text("开发者微信：BuLu-0208 IOS巨魔王")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
@@ -193,13 +205,11 @@ struct KamiVerifyView: View {
                         .padding(.bottom, 24)
                     }
                     .frame(maxWidth: geometry.size.width / 1.15)
-                    .background(Color.white.opacity(0.06))
                     .background(Color.black.opacity(0.3))
                     .cornerRadius(20)
                     .shadow(color: .black.opacity(0.3), radius: 20)
                     .padding(.horizontal)
                     
-                    // 底部设备标识
                     Text("设备标识：\(deviceCode)")
                         .font(.system(size: 10, weight: .regular, design: .monospaced))
                         .foregroundColor(.white.opacity(0.2))
@@ -209,7 +219,10 @@ struct KamiVerifyView: View {
                     Spacer()
                 }
             }
-            .onTapGesture { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil) }.onAppear {
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil)
+            }
+            .onAppear {
                 withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
                     shimmer.toggle()
                 }
@@ -275,6 +288,3 @@ struct KamiVerifyView: View {
         }.resume()
     }
 }
-
-
-
