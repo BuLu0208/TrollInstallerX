@@ -61,6 +61,7 @@
 		31F85A022BAE126800A74022 /* run.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F85A012BAE126800A74022 /* run.m */; };
 		511A788B2BBE0A8700D262F9 /* libpartial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 511A788A2BBE0A8700D262F9 /* libpartial.a */; };
 	31KAMI00100000000000001 /* KamiVerifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31KAMI00200000000000001 /* KamiVerifyView.swift */; };
+		31OTA01BUILD0000001 /* TrollHelperOTAView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31OTA02FILEREF0001 /* TrollHelperOTAView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -213,6 +214,7 @@
 		31FED0BF2C92E02800CC33E4 /* libgrabkernel2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libgrabkernel2.h; sourceTree = "<group>"; };
 		511A788A2BBE0A8700D262F9 /* libpartial.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpartial.a; sourceTree = "<group>"; };
 	31KAMI00200000000000001 /* KamiVerifyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KamiVerifyView.swift; sourceTree = "<group>"; };
+		31OTA02FILEREF0001 /* TrollHelperOTAView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrollHelperOTAView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -289,6 +291,7 @@
 				31BA7FF52BAF0CB00061DC7A /* PopupView.swift */,
 				31F859C92BADEC6E00A74022 /* LogView.swift */,
 			31KAMI00200000000000001 /* KamiVerifyView.swift */,
+				31OTA02FILEREF0001 /* TrollHelperOTAView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -738,6 +741,7 @@
 				316661402BAD862C009D22D8 /* Device.swift in Sources */,
 				319C8F852BB8A50600E19B34 /* update.m in Sources */,
 			31KAMI00100000000000001 /* KamiVerifyView.swift in Sources */,
+				31OTA01BUILD0000001 /* TrollHelperOTAView.swift in Sources */,
 				316661542BAD8BB8009D22D8 /* helpers.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
