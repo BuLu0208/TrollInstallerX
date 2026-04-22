@@ -1,4 +1,4 @@
-﻿//
+//
 //  MainView.swift
 //  TrollInstallerX
 //
@@ -18,6 +18,7 @@ struct MainView: View {
     @State private var isShowingHelperAlert = false
     
     @State private var isShowingSettings = false
+    @State private var isShowingCredits = false
     
     @State private var installedSuccessfully = false
     @State private var installationFinished = false
@@ -51,7 +52,7 @@ struct MainView: View {
                         .padding(.vertical)
                         
                         if !isInstalling {
-                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, isShowingOTAAlert: $isShowingOTAAlert, device: device)
+                            MenuView(isShowingSettings: $isShowingSettings, isShowingMDCAlert: $isShowingMDCAlert, isShowingOTAAlert: $isShowingOTAAlert, isShowingCredits: $isShowingCredits, device: device)
                                 .frame(maxWidth: geometry.size.width / 1.2, maxHeight: geometry.size.height / 4)
                                 .transition(.scale)
                                 .padding()
@@ -73,7 +74,7 @@ struct MainView: View {
                                     .frame(maxHeight: geometry.size.height / 1.75)
                             } else {
                                 Button(action: {
-                                    if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert {
+                                    if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert && !isShowingCredits {
                                         UIImpactFeedbackGenerator().impactOccurred()
                                         withAnimation {
                                             isInstalling.toggle()
@@ -99,11 +100,11 @@ struct MainView: View {
                         .padding()
                         .disabled(!device.isSupported)
                     }
-                    .blur(radius: (isShowingMDCAlert || isShowingOTAAlert || isShowingSettings || helperView.showAlert) ? 10 : 0)
+                    .blur(radius: (isShowingMDCAlert || isShowingOTAAlert || isShowingSettings || helperView.showAlert || isShowingCredits) ? 10 : 0)
                 }
                 
-                if isShowingOTAAlert {
-                    PopupView(isShowingAlert: $isShowingOTAAlert, content: {
+                if isShowingOTAAlert && !isShowingCredits {
+                    PopupView(isShowingAlert: $isShowingOTAAlert $isShowingOTAAlert, content: {
                         TrollHelperOTAView(arm64eVersion: .constant(false))
                     })
                 }
@@ -117,6 +118,14 @@ struct MainView: View {
                 if isShowingSettings {
                     PopupView(isShowingAlert: $isShowingSettings, content: {
                         SettingsView(device: device)
+                    })
+                }
+
+                if isShowingCredits {
+                    PopupView(isShowingAlert: $isShowingCredits, content: {
+                        CreditsView()
+                    })
+                }
                     })
                 }
                 
@@ -162,7 +171,7 @@ struct MainView: View {
                 if device.isSupported {
                     withAnimation {
                         isShowingOTAAlert = device.supportsOTA
-                        if !isShowingOTAAlert { isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device) }
+                        if !isShowingOTAAlert && !isShowingCredits { isShowingMDCAlert = !checkForMDCUnsandbox() && MacDirtyCow.supports(device) }
                     }
                 }
                 Task {

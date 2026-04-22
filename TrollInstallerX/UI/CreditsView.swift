@@ -2,89 +2,147 @@
 //  CreditsView.swift
 //  TrollInstallerX
 //
-//  Created by Alfie on 26/03/2024.
-//
 
 import SwiftUI
 
-struct Credit {
-    var name: String
-    var link: URL
-}
-
-let credits: [Credit] = [
-    Credit(name: "opa334", link: URL(string: "https://x.com/opa334dev")!),
-    Credit(name: "Kaspersky", link: URL(string: "https://securelist.com/operation-triangulation-the-last-hardware-mystery/111669/")!),
-    Credit(name: "wh1te4ever", link: URL(string: "https://github.com/wh1te4ever")!),
-    Credit(name: "xina520", link: URL(string: "https://x.com/xina520")!),
-    Credit(name: "staturnz", link: URL(string: "https://github.com/staturnzz")!),
-    Credit(name: "DTCalabro", link: URL(string: "https://github.com/DTCalabro")!),
-    
-    Credit(name: "felib-pb", link: URL(string: "https://github.com/felix-pb")!),
-    Credit(name: "kok3shidoll", link: URL(string: "https://github.com/kok3shidoll")!),
-    Credit(name: "Zhuowei", link: URL(string: "https://github.com/zhuowei")!),
-    Credit(name: "dhinakg", link: URL(string: "https://github.com/dhinakg")!),
-    Credit(name: "aaronp613", link: URL(string: "https://x.com/aaronp613")!),
-    Credit(name: "JJTech", link: URL(string: "https://github.com/JJTech0130")!)
-]
-
 struct CreditsView: View {
+    @State private var copiedMsg: String = ""
+    @State private var copiedTimer: Timer?
+
     var body: some View {
-        
-        VStack {
-            Text("鸣谢")
-                .font(.system(size: 23, weight: .semibold, design: .rounded))
-                .foregroundColor(.white)
-                .padding()
-            HStack {
-                VStack {
-                    
-                    VStack(spacing: 3) {
-                        ForEach(0..<(credits.count / 2)) { index in
-                            CreditRow(credit: credits[index])
+        ScrollView {
+            VStack(spacing: 0) {
+                Text("使用教程")
+                    .font(.system(size: 23, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white)
+                    .padding(.top, 30)
+                    .padding(.bottom, 20)
+
+                VStack(spacing: 16) {
+                    // 1. 开发者联系方式
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "message.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(Color.green.opacity(0.7))
+                            Text("开发者联系方式")
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .foregroundColor(.white.opacity(0.9))
+                        }
+
+                        Button(action: {
+                            UIPasteboard.general.string = "BuLu-0208"
+                            showCopied("BuLu-0208")
+                        }) {
+                            HStack(spacing: 8) {
+                                Text("微信：BuLu-0208")
+                                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Spacer()
+                                Text("点击复制")
+                                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                                    .foregroundColor(Color(hex: 0x533483))
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color.white.opacity(0.08))
+                            .cornerRadius(10)
+                        }
+
+                        if !copiedMsg.isEmpty {
+                            Text(copiedMsg)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(Color.green.opacity(0.9))
                         }
                     }
-                }
-                
-                VStack {
-                    
-                    VStack(spacing: 3) {
-                        ForEach((credits.count / 2)..<credits.count) { index in
-                            CreditRow(credit: credits[index])
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 16)
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(14)
+
+                    // 2. 巨魔使用教程
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "book.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(Color(hex: 0x533483))
+                            Text("巨魔使用教程")
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .foregroundColor(.white.opacity(0.9))
+                        }
+
+                        Link(destination: URL(string: "https://www.yuque.com/yuqueyonghuroiej0/mucqna/wdnqeac20vyq2vq5?singleDoc#")!) {
+                            HStack {
+                                Text("点击查看巨魔使用教程")
+                                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(Color(hex: 0x533483))
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color.white.opacity(0.08))
+                            .cornerRadius(10)
                         }
                     }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 16)
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(14)
+
+                    // 3. 卡密购买
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "cart.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(Color.orange.opacity(0.7))
+                            Text("购买卡密")
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .foregroundColor(.white.opacity(0.9))
+                        }
+
+                        Link(destination: URL(string: "https://www.820faka.cn//details/180476F2")!) {
+                            HStack {
+                                Text("点击购买卡密")
+                                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(Color.orange.opacity(0.6))
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color.white.opacity(0.08))
+                            .cornerRadius(10)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 16)
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(14)
                 }
+                .padding(.bottom, 30)
             }
         }
+        .background(
+            LinearGradient(
+                colors: [Color(hex: 0x1a1a2e), Color(hex: 0x16213e), Color(hex: 0x0f3460)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
     }
-}
 
-struct CreditRow: View {
-    let credit: Credit
-    
-    var body: some View {
-        HStack {
-            Link(destination: credit.link) {
-                HStack {
-                    Text(credit.name)
-                        .font(.system(size: 16, weight: .regular, design: .rounded))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.white)
-                    Image(systemName: "chevron.right")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 10, height: 10)
-                        .foregroundColor(.white)
-                }
+    private func showCopied(_ wechat: String) {
+        copiedMsg = "已复制 " + wechat + "，前往微信搜索添加"
+        copiedTimer?.invalidate()
+        copiedTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+            DispatchQueue.main.async {
+                copiedMsg = ""
             }
-            .padding()
         }
-    }
-}
-
-
-struct CreditsView_Previews: PreviewProvider {
-    static var previews: some View {
-        CreditsView()
     }
 }
