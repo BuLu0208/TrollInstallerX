@@ -1,4 +1,4 @@
-//
+﻿//
 //  Installation.swift
 //  TrollInstallerX
 //
@@ -28,20 +28,20 @@ func getKernel(_ device: Device) -> Bool {
             if fd > 0 {
                 let tokenData = get_NSString_from_file(fd)
                 sandbox_extension_consume(tokenData)
-                Logger.log("正在复制内核缓存")
+                Logger.log("姝ｅ湪澶嶅埗鍐呮牳缂撳瓨")
                 let path = get_kernelcache_path()
                 do {
                     try fileManager.copyItem(atPath: path!, toPath: kernelPath)
                     return true
                 } catch {
-                    Logger.log("复制内核缓存失败", type: .error)
+                    Logger.log("澶嶅埗鍐呮牳缂撳瓨澶辫触", type: .error)
                     NSLog("Failed to copy kernelcache - \(error)")
                 }
             }
         }
-        Logger.log("正在下载内核")
+        Logger.log("姝ｅ湪涓嬭浇鍐呮牳")
         if !grab_kernelcache(kernelPath) {
-            Logger.log("下载内核失败", type: .error)
+            Logger.log("涓嬭浇鍐呮牳澶辫触", type: .error)
             return false
         }
     }
@@ -86,27 +86,27 @@ func doDirectInstall(_ device: Device) async -> Bool {
     let iOS14 = device.version < Version("15.0")
     let supportsFullPhysRW = !(device.cpuFamily == .A8 && device.version > Version("15.1.1")) && ((device.isArm64e && device.version >= Version(major: 15, minor: 2)) || (!device.isArm64e && device.version >= Version("15.0")))
     
-    Logger.log("正运行在 \(device.modelIdentifier) 设备上的 iOS 版本为 \(device.version.readableString)")
+    Logger.log("姝ｈ繍琛屽湪 \(device.modelIdentifier) 璁惧涓婄殑 iOS 鐗堟湰涓?\(device.version.readableString)")
     
     if !iOS14 {
         if !(getKernel(device)) {
-            Logger.log("获取内核漏洞失败", type: .error)
+            Logger.log("鑾峰彇鍐呮牳婕忔礊澶辫触", type: .error)
             return false
         }
     }
     
-    Logger.log("正在查找内核漏洞")
+    Logger.log("姝ｅ湪鏌ユ壘鍐呮牳婕忔礊")
     if !initialise_kernel_info(kernelPath, iOS14) {
-        Logger.log("查找内核漏洞失败", type: .error)
+        Logger.log("鏌ユ壘鍐呮牳婕忔礊澶辫触", type: .error)
         return false
     }
     
-    Logger.log("正在利用内核 (\(exploit.name)) 漏洞")
+    Logger.log("姝ｅ湪鍒╃敤鍐呮牳 (\(exploit.name)) 婕忔礊")
     if !exploit.initialise() {
-        Logger.log("利用内核漏洞失败", type: .error)
+        Logger.log("鍒╃敤鍐呮牳婕忔礊澶辫触", type: .error)
         return false
     }
-    Logger.log("成功利用内核漏洞", type: .success)
+    Logger.log("鎴愬姛鍒╃敤鍐呮牳婕忔礊", type: .success)
     post_kernel_exploit(iOS14)
     
     var trollstoreTarData: Data?
@@ -116,12 +116,12 @@ func doDirectInstall(_ device: Device) async -> Bool {
     
     if supportsFullPhysRW {
         if device.isArm64e {
-            Logger.log("正在绕过 PPL (\(dmaFail.name))")
+            Logger.log("姝ｅ湪缁曡繃 PPL (\(dmaFail.name))")
             if !dmaFail.initialise() {
-                Logger.log("绕过 PPL 失败", type: .error)
+                Logger.log("缁曡繃 PPL 澶辫触", type: .error)
                 return false
             }
-            Logger.log("成功绕过 PPL", type: .success)
+            Logger.log("鎴愬姛缁曡繃 PPL", type: .success)
         }
         
         if #available(iOS 16, *) {
@@ -129,42 +129,42 @@ func doDirectInstall(_ device: Device) async -> Bool {
         }
         
         if !build_physrw_primitive() {
-            Logger.log("构建硬件读写条件失败", type: .error)
+            Logger.log("鏋勫缓纭欢璇诲啓鏉′欢澶辫触", type: .error)
             return false
         }
         
         if device.isArm64e {
             if !dmaFail.deinitialise() {
-                Logger.log("初始化 \(dmaFail.name) 失败", type: .error)
+                Logger.log("鍒濆鍖?\(dmaFail.name) 澶辫触", type: .error)
                 return false
             }
         }
         
         if !exploit.deinitialise() {
-            Logger.log("初始化 \(exploit.name) 失败", type: .error)
+            Logger.log("鍒濆鍖?\(exploit.name) 澶辫触", type: .error)
             return false
         }
         
-        Logger.log("正在解除沙盒")
+        Logger.log("姝ｅ湪瑙ｉ櫎娌欑洅")
         if !unsandbox() {
-            Logger.log("解除沙盒失败", type: .error)
+            Logger.log("瑙ｉ櫎娌欑洅澶辫触", type: .error)
             return false
         }
         
-        Logger.log("提升权限")
+        Logger.log("鎻愬崌鏉冮檺")
         if !get_root_pplrw() {
-            Logger.log("提升权限失败", type: .error)
+            Logger.log("鎻愬崌鏉冮檺澶辫触", type: .error)
             return false
         }
         if !platformise() {
-            Logger.log("平台化失败", type: .error)
+            Logger.log("骞冲彴鍖栧け璐?, type: .error)
             return false
         }
     } else {
         
-        Logger.log("解除沙盒并提升权限中")
+        Logger.log("瑙ｉ櫎娌欑洅骞舵彁鍗囨潈闄愪腑")
         if !get_root_krw(iOS14) {
-            Logger.log("解除沙盒并提升权限失败", type: .error)
+            Logger.log("瑙ｉ櫎娌欑洅骞舵彁鍗囨潈闄愬け璐?, type: .error)
             return false
         }
     }
@@ -177,7 +177,7 @@ func doDirectInstall(_ device: Device) async -> Bool {
             FileManager.default.createFile(atPath: "/private/preboot/tmp/TrollStore.tar", contents: nil)
             try data.write(to: URL(string: "file:///private/preboot/tmp/TrollStore.tar")!)
         } catch {
-            print("无法成功写出 TrollStore.tar - \(error.localizedDescription)")
+            print("鏃犳硶鎴愬姛鍐欏嚭 TrollStore.tar - \(error.localizedDescription)")
         }
     }
     
@@ -185,9 +185,9 @@ func doDirectInstall(_ device: Device) async -> Bool {
     let useLocalCopy = FileManager.default.fileExists(atPath: "/private/preboot/tmp/TrollStore.tar")
 
     if !fileManager.fileExists(atPath: "/private/preboot/tmp/trollstorehelper") {
-        Logger.log("正在获取 TrollStore.tar")
+        Logger.log("姝ｅ湪鑾峰彇 TrollStore.tar")
         if !extractTrollStore(useLocalCopy) {
-            Logger.log("获取 TrollStore.tar 失败", type: .error)
+            Logger.log("鑾峰彇 TrollStore.tar 澶辫触", type: .error)
             return false
         }
     }
@@ -200,42 +200,42 @@ func doDirectInstall(_ device: Device) async -> Bool {
     if tipsCandidate != nil && tipsCandidate!.isInstalled {
         persistenceID = "com.apple.tips"
         TIXDefaults().setValue(persistenceID, forKey: "persistenceHelper")
-        Logger.log("\u81ea\u52a8\u9009\u62e9 Tips \u4f5c\u4e3a\u6301\u4e45\u6027\u52a9\u624b", type: .success)
+        Logger.log("自动选择 Tips 作为持久性助手", type: .success)
     } else {
         DispatchQueue.main.sync {
             HelperAlert.shared.showAlert = true
             HelperAlert.shared.objectWillChange.send()
         }
         while HelperAlert.shared.showAlert { }
-        persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
+        persistenceID = TIXDefaults().string(forKey: "persistenceHelper") ?? ""
     }
     
     if persistenceID != "" {
         if install_persistence_helper(persistenceID) {
-            Logger.log("成功安装持久性助手！", type: .success)
+            Logger.log("鎴愬姛瀹夎鎸佷箙鎬у姪鎵嬶紒", type: .success)
         } else {
-            Logger.log("安装持久性助手失败", type: .error)
+            Logger.log("瀹夎鎸佷箙鎬у姪鎵嬪け璐?, type: .error)
         }
     }
     
-    Logger.log("正在安装 TrollStore")
+    Logger.log("姝ｅ湪瀹夎 TrollStore")
     if !install_trollstore(useLocalCopy ? "/private/preboot/tmp/TrollStore.tar" : Bundle.main.bundlePath + "/TrollStore.tar") {
-        Logger.log("安装 TrollStore 失败", type: .error)
+        Logger.log("瀹夎 TrollStore 澶辫触", type: .error)
     } else {
-        Logger.log("成功安装 TrollStore！", type: .success)
+        Logger.log("鎴愬姛瀹夎 TrollStore锛?, type: .success)
     }
     
     if !cleanupPrivatePreboot() {
-        Logger.log("清除 /private/preboot 失败", type: .error)
+        Logger.log("娓呴櫎 /private/preboot 澶辫触", type: .error)
     }
     
     if !supportsFullPhysRW {
         if !drop_root_krw(iOS14) {
-            Logger.log("降低root权限失败", type: .error)
+            Logger.log("闄嶄綆root鏉冮檺澶辫触", type: .error)
             return false
         }
         if !exploit.deinitialise() {
-            Logger.log("初始化 \(exploit.name) 失败", type: .error)
+            Logger.log("鍒濆鍖?\(exploit.name) 澶辫触", type: .error)
             return false
         }
     }
@@ -246,7 +246,7 @@ func doDirectInstall(_ device: Device) async -> Bool {
 func doIndirectInstall(_ device: Device) async -> Bool {
     let exploit = selectExploit(device)
     
-    Logger.log("正运行在 \(device.modelIdentifier) 设备上的 iOS 版本为 \(device.version.readableString)")
+    Logger.log("姝ｈ繍琛屽湪 \(device.modelIdentifier) 璁惧涓婄殑 iOS 鐗堟湰涓?\(device.version.readableString)")
     
     if !extractTrollStoreIndirect() {
         return false
@@ -256,26 +256,26 @@ func doIndirectInstall(_ device: Device) async -> Bool {
     }
     
     if !(getKernel(device)) {
-        Logger.log("获取内核失败", type: .error)
+        Logger.log("鑾峰彇鍐呮牳澶辫触", type: .error)
     }
     
-    Logger.log("正在查找内核漏洞")
+    Logger.log("姝ｅ湪鏌ユ壘鍐呮牳婕忔礊")
     if !initialise_kernel_info(kernelPath, false) {
-        Logger.log("查找内核漏洞失败", type: .error)
+        Logger.log("鏌ユ壘鍐呮牳婕忔礊澶辫触", type: .error)
         return false
     }
     
-    Logger.log("正在利用内核漏洞 (\(exploit.name))")
+    Logger.log("姝ｅ湪鍒╃敤鍐呮牳婕忔礊 (\(exploit.name))")
     if !exploit.initialise() {
-        Logger.log("利用内核漏洞失败", type: .error)
+        Logger.log("鍒╃敤鍐呮牳婕忔礊澶辫触", type: .error)
         return false
     }
     defer {
         if !exploit.deinitialise() {
-            Logger.log("初始化 \(exploit.name) 失败", type: .error)
+            Logger.log("鍒濆鍖?\(exploit.name) 澶辫触", type: .error)
         }
     }
-    Logger.log("成功利用内核", type: .success)
+    Logger.log("鎴愬姛鍒╃敤鍐呮牳", type: .success)
     post_kernel_exploit(false)
     
     var path: UnsafePointer<CChar>? = nil
@@ -283,7 +283,7 @@ func doIndirectInstall(_ device: Device) async -> Bool {
         UnsafeMutablePointer<UnsafePointer<CChar>?>.init(ptr)
     }
     if is_persistence_helper_installed(pathPointer) {
-        Logger.log("持久性助手已安装! (\(path == nil ? "unknown" : String(cString: path!)))", type: .warning)
+        Logger.log("鎸佷箙鎬у姪鎵嬪凡瀹夎! (\(path == nil ? "unknown" : String(cString: path!)))", type: .warning)
         return false
     }
     
@@ -307,14 +307,14 @@ func doIndirectInstall(_ device: Device) async -> Bool {
     if tipsCandidate != nil && tipsCandidate!.isInstalled {
         persistenceID = "com.apple.tips"
         TIXDefaults().setValue(persistenceID, forKey: "persistenceHelper")
-        Logger.log("\u81ea\u52a8\u9009\u62e9 Tips \u4f5c\u4e3a\u6301\u4e45\u6027\u52a9\u624b", type: .success)
+        Logger.log("自动选择 Tips 作为持久性助手", type: .success)
     } else {
         DispatchQueue.main.sync {
             HelperAlert.shared.showAlert = true
             HelperAlert.shared.objectWillChange.send()
         }
         while HelperAlert.shared.showAlert { }
-        persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
+        persistenceID = TIXDefaults().string(forKey: "persistenceHelper") ?? ""
     }
     
     var pathToInstall = ""
@@ -325,15 +325,15 @@ func doIndirectInstall(_ device: Device) async -> Bool {
     }
     var success = false
     if !install_persistence_helper_via_vnode(pathToInstall) {
-        Logger.log("安装持久性助手失败", type: .error)
+        Logger.log("瀹夎鎸佷箙鎬у姪鎵嬪け璐?, type: .error)
     } else {
-        Logger.log("成功安装持久性助手", type: .success)
+        Logger.log("鎴愬姛瀹夎鎸佷箙鎬у姪鎵?, type: .success)
         success = true
     }
     
     if success {
         let verbose = TIXDefaults().bool(forKey: "verbose")
-        Logger.log("\(verbose ? "15" : "5") 秒后注销")
+        Logger.log("\(verbose ? "15" : "5") 绉掑悗娉ㄩ攢")
         DispatchQueue.global().async {
             sleep(verbose ? 15 : 5)
             restartBackboard()
@@ -342,3 +342,4 @@ func doIndirectInstall(_ device: Device) async -> Bool {
     
     return true
 }
+
