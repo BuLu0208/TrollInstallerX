@@ -151,6 +151,7 @@ struct MenuView: View {
                         .padding(.horizontal)
                         .padding(.bottom, 8)
                     }
+                }
                 .padding()
             }
         }
@@ -181,7 +182,6 @@ struct MenuView: View {
             let downloadRequest = URLRequest(url: testURL)
             URLSession.shared.dataTask(with: downloadRequest) { data, _, downloadError in
                 let endTime = Date()
-                let totalTime = endTime.timeIntervalSince(startTime)
                 let downloadTime = endTime.timeIntervalSince(connectedTime ?? startTime)
                 let bytes = Double(data?.count ?? 0)
                 let speed = bytes / downloadTime / 1024.0 / 1024.0
