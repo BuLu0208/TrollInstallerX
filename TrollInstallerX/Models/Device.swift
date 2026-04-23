@@ -38,12 +38,7 @@ struct Device {
         sysctlbyname("hw.cpusubtype", &cpusubtype, &len, nil, 0)
         self.isArm64e = cpusubtype == CPU_SUBTYPE_ARM64E
         
-        // Check if device supports TrollHelperOTA
-        if self.isArm64e {
-            supportsOTA = self.version < Version("15.7")
-        } else {
-            supportsOTA = self.version >= Version("15.0") && self.version < Version("15.5")
-        }
+        self.supportsOTA = false
         
         // Set the CPU family (for checking dmaFail compatibility)
         var deviceCPU = 0
