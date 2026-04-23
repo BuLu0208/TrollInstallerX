@@ -76,12 +76,16 @@ struct MainView: View {
                                 Button(action: {
                                     if !isShowingSettings && !isShowingMDCAlert && !isShowingOTAAlert && !isShowingCredits {
                                         UIImpactFeedbackGenerator().impactOccurred()
+                                        if installationFinished && !installedSuccessfully {
+                                            installationFinished = false
+                                            installedSuccessfully = false
+                                        }
                                         withAnimation {
                                             isInstalling.toggle()
                                         }
                                     }
                                 }, label: {
-                                    Text(device.isSupported ? "安装 TrollStore" : "不支持")
+                                    Text(device.isSupported ? (installationFinished && !installedSuccessfully ? "重试安装" : "安装 TrollStore") : "不支持")
                                         .font(.system(size: 20, weight: .semibold, design: .rounded))
                                         .foregroundColor(.white)
                                         .padding()
@@ -91,7 +95,7 @@ struct MainView: View {
                                 .frame(maxWidth: geometry.size.width / 1.2)
                                 .frame(maxHeight: 60)
                                 .background(
-                                    LinearGradient(colors: [Color(hex: 0x0f3460), Color(hex: 0x533483)], startPoint: .leading, endPoint: .trailing)
+                                    LinearGradient(colors: device.isSupported && installationFinished && !installedSuccessfully ? [Color(hex: 0xe94560), Color(hex: 0xc23616)] : [Color(hex: 0x0f3460), Color(hex: 0x533483)], startPoint: .leading, endPoint: .trailing)
                                 )
                                 .cornerRadius(16)
                                 .shadow(color: Color(hex: 0x533483).opacity(0.3), radius: 15)
@@ -154,6 +158,11 @@ struct MainView: View {
                             installedSuccessfully = await doIndirectInstall(device)
                         }
                         installationFinished = true
+                        await MainActor.run {
+                            withAnimation {
+                                isInstalling = false
+                            }
+                        }
                     }
                     UINotificationFeedbackGenerator().notificationOccurred(installedSuccessfully ? .success : .error)
                 }
