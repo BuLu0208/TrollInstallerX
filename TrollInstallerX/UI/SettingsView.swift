@@ -12,7 +12,7 @@ struct SettingsView: View {
     let device: Device
     
     @AppStorage("exploitFlavour", store: TIXDefaults()) var exploitFlavour: String = ""
-    @AppStorage("verbose", store: TIXDefaults()) var verbose: Bool = false
+    @AppStorage("verbose", store: TIXDefaults()) var verbose: Bool = true
     
     var body: some View {
         VStack(spacing: 10) {
