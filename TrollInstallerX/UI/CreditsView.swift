@@ -25,7 +25,7 @@ struct CreditsView: View {
                             Image(systemName: "message.fill")
                                 .font(.system(size: 14))
                                 .foregroundColor(Color.green.opacity(0.7))
-                            Text("开发者联系方式（有问题添加没事别加！）")
+                            Text("报错问题反馈（有问题添加没事别加！）")
                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                                 .foregroundColor(.white.opacity(0.9))
                         }
@@ -35,7 +35,7 @@ struct CreditsView: View {
                             showCopied("BuLu-0208")
                         }) {
                             HStack(spacing: 8) {
-                                Text("微信：BuLu-0208")
+                                Text("出错反馈")
                                     .font(.system(size: 15, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.7))
                                 Spacer()
