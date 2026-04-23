@@ -152,7 +152,7 @@ struct KamiVerifyView: View {
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 10) {
-                            Text("有问题联系下方微信备注问题 没事别添加！")
+                            Text("没有卡密点击👇购买链接跳转购买")
                                 .font(.system(size: 13, weight: .bold, design: .rounded))
                                 .foregroundColor(.white.opacity(0.7))
                             
@@ -185,10 +185,10 @@ struct KamiVerifyView: View {
                             }
                             
                             HStack(spacing: 6) {
-                                Image(systemName: "message.fill")
+                                Image(systemName: "bag.badge.plus")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color.green.opacity(0.6))
-                                Text("开发者微信：BuLu-0208 ")
+                                Text(" 基于TrollInstallerX项目开发实现免挂加速器安装巨魔 ")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
