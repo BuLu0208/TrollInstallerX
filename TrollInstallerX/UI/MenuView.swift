@@ -173,7 +173,7 @@ struct MenuView: View {
 
         URLSession.shared.dataTask(with: request) { _, response, headError in
             connectedTime = Date()
-            let ping = connectedTime.timeIntervalSince(startTime)
+            let ping = connectedTime!.timeIntervalSince(startTime)
 
             DispatchQueue.main.async {
                 networkPing = String(format: "延迟 %.1fs", ping)
