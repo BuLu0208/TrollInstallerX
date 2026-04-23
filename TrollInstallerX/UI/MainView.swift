@@ -149,7 +149,8 @@ struct MainView: View {
                     helperView.showAlert = false
                 }
             }
-            .onChange(of: isInstalling) { _ in
+            .onChange(of: isInstalling) { newValue in
+                guard newValue else { return }
                 Task {
                     if device.isSupported {
                         if device.supportsDirectInstall {
