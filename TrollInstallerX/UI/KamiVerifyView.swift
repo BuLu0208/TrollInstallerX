@@ -67,7 +67,7 @@ struct KamiVerifyView: View {
                                 .shadow(radius: 5)
                         }
                         
-                        Text("免挂梯子巨魔安装器")
+                        Text("免梯子巨魔安装器")
                             .font(.system(size: 22, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                             .shadow(color: Color.white.opacity(0.3), radius: 10)
@@ -161,7 +161,7 @@ struct KamiVerifyView: View {
                                     Image(systemName: "cart.badge.plus")
                                         .font(.system(size: 11))
                                         .foregroundColor(Color(hex: 0x533483))
-                                    Text("点此购买卡密")
+                                    Text("点此购买激活卡密")
                                         .font(.system(size: 12, weight: .medium, design: .rounded))
                                         .underline()
                                         .foregroundColor(Color(hex: 0x533483))
@@ -179,7 +179,7 @@ struct KamiVerifyView: View {
                                 Image(systemName: "bag.badge.plus")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color(hex: 0x533483))
-                                Text("获取卡密 TB：老司机巨魔 丶 IOS巨魔王")
+                                Text("版 本 ：1.0")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
@@ -194,10 +194,10 @@ struct KamiVerifyView: View {
                             }
                             
                             HStack(spacing: 6) {
-                                Image(systemName: "headphones")
+                                Image(systemName: "bag.badge.plus")
                                     .font(.system(size: 11))
                                     .foregroundColor(Color.orange.opacity(0.6))
-                                Text("联系微信：jiesuo66688")
+                                Text("请确保给予WiFi和流量权限")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.white.opacity(0.55))
                             }
