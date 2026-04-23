@@ -13,6 +13,7 @@ struct SettingsView: View {
     
     @AppStorage("exploitFlavour", store: TIXDefaults()) var exploitFlavour: String = ""
     @AppStorage("verbose", store: TIXDefaults()) var verbose: Bool = false
+    @AppStorage("autoInstallHelper", store: TIXDefaults()) var autoInstallHelper: Bool = true
     
     var body: some View {
         VStack(spacing: 10) {
@@ -51,6 +52,14 @@ struct SettingsView: View {
             VStack {
                 Toggle(isOn: $verbose, label: {
                     Text("详细日志记录")
+                        .font(.system(size: 17, weight: .regular, design: .rounded))
+                        .foregroundColor(.white)
+                })
+            }
+            .padding()
+            VStack {
+                Toggle(isOn: $autoInstallHelper, label: {
+                    Text("自动安装持久性助手")
                         .font(.system(size: 17, weight: .regular, design: .rounded))
                         .foregroundColor(.white)
                 })
