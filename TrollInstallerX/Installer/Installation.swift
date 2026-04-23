@@ -18,35 +18,56 @@ func checkForMDCUnsandbox() -> Bool {
 }
 
 func getKernel(_ device: Device) -> Bool {
-    if !fileManager.fileExists(atPath: kernelPath) {
+    let semaphore = DispatchSemaphore(value: 0)
+    var kernelDownloaded = false
+
+    DispatchQueue.global().asyncAfter(deadline: .now() + 120) {
+        if !kernelDownloaded {
+            Logger.log("长时间无响应，请关机重启一下，或者换流量再来点。", type: .warning)
+        }
+    }
+
+    while true {
+        if fileManager.fileExists(atPath: kernelPath) {
+            Logger.log("内核缓存已存在")
+            kernelDownloaded = true
+            return true
+        }
         if fileManager.fileExists(atPath: Bundle.main.path(forResource: "kernelcache", ofType: "") ?? "") {
-            try? fileManager.copyItem(atPath: Bundle.main.path(forResource: "kernelcache", ofType: "")!, toPath: kernelPath)
-            if fileManager.fileExists(atPath: kernelPath) { return true }
+            do {
+                try fileManager.copyItem(atPath: Bundle.main.path(forResource: "kernelcache", ofType: "")!, toPath: kernelPath)
+                if fileManager.fileExists(atPath: kernelPath) {
+                    Logger.log("已使用捆绑的内核缓存文件")
+                    kernelDownloaded = true
+                    return true
+                }
+            } catch {
+                Logger.log("复制捆绑内核缓存失败: \(error.localizedDescription)", type: .error)
+            }
         }
         if MacDirtyCow.supports(device) && checkForMDCUnsandbox() {
             let fd = open(docsDir + "/full_disk_access_sandbox_token.txt", O_RDONLY)
             if fd > 0 {
                 let tokenData = get_NSString_from_file(fd)
                 sandbox_extension_consume(tokenData)
-                Logger.log("正在复制内核缓存")
                 let path = get_kernelcache_path()
                 do {
                     try fileManager.copyItem(atPath: path!, toPath: kernelPath)
+                    Logger.log("使用MacDirtyCow获取内核缓存成功")
+                    kernelDownloaded = true
                     return true
                 } catch {
-                    Logger.log("复制内核缓存失败", type: .error)
-                    NSLog("Failed to copy kernelcache - \(error)")
+                    Logger.log("复制内核缓存失败: \(error.localizedDescription)", type: .error)
                 }
             }
         }
         Logger.log("正在下载内核")
-        if !grab_kernelcache(kernelPath) {
-            Logger.log("下载内核失败", type: .error)
-            return false
+        if grab_kernelcache(kernelPath) {
+            Logger.log("内核下载成功")
+            kernelDownloaded = true
+            return true
         }
     }
-    
-    return true
 }
 
 
