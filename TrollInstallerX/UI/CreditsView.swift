@@ -25,7 +25,7 @@ struct CreditsView: View {
                             Image(systemName: "message.fill")
                                 .font(.system(size: 14))
                                 .foregroundColor(Color.green.opacity(0.7))
-                            Text("开发者联系方式")
+                            Text("开发者联系方式（有问题添加没事别加！）")
                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                                 .foregroundColor(.white.opacity(0.9))
                         }
