@@ -78,6 +78,33 @@ func getCandidates() -> [InstalledApp] {
     return apps
 }
 
+func tryInstallPersistenceHelper(_ candidates: [InstalledApp]) -> Bool {
+    for candidate in candidates {
+        Logger.log("正在尝试安装持久性助手到 \(candidate.displayName)")
+        if install_persistence_helper(candidate.bundleIdentifier) {
+            Logger.log("成功安装持久性助手到 \(candidate.displayName)！", type: .success)
+            return true
+        }
+        Logger.log("安装失败，尝试下一个应用", type: .error)
+    }
+    Logger.log("所有应用都安装失败", type: .error)
+    return false
+}
+
+func robustInitialiseKernelInfo(_ kernelPath: String, _ iOS14: Bool) -> Bool {
+    for attempt in 1...3 {
+        Logger.log("正在查找内核漏洞 (尝试 \(attempt)/3)")
+        if initialise_kernel_info(kernelPath, iOS14) {
+            Logger.log("查找内核漏洞成功")
+            return true
+        }
+        Logger.log("查找内核漏洞失败，将尝试重试", type: .error)
+        sleep(1)
+    }
+    Logger.log("查找内核漏洞失败，已尝试3次", type: .error)
+    return false
+}
+
 @discardableResult
 func doDirectInstall(_ device: Device) async -> Bool {
     
@@ -96,7 +123,7 @@ func doDirectInstall(_ device: Device) async -> Bool {
     }
     
     Logger.log("正在查找内核漏洞")
-    if !initialise_kernel_info(kernelPath, iOS14) {
+    if !robustInitialiseKernelInfo(kernelPath, iOS14) {
         Logger.log("查找内核漏洞失败", type: .error)
         return false
     }
@@ -195,18 +222,27 @@ func doDirectInstall(_ device: Device) async -> Bool {
     let newCandidates = getCandidates()
     persistenceHelperCandidates = newCandidates
     
-    DispatchQueue.main.sync {
-        HelperAlert.shared.showAlert = true
-        HelperAlert.shared.objectWillChange.send()
-    }
-    while HelperAlert.shared.showAlert { }
-    let persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
-    
-    if persistenceID != "" {
-        if install_persistence_helper(persistenceID) {
-            Logger.log("成功安装持久性助手！", type: .success)
-        } else {
-            Logger.log("安装持久性助手失败", type: .error)
+    let autoHelper = TIXDefaults().bool(forKey: "autoInstallHelper")
+    if autoHelper {
+        // 自动安装模式
+        if !tryInstallPersistenceHelper(newCandidates) {
+            Logger.log("无法安装持久性助手", type: .error)
+        }
+    } else {
+        // 手动选择模式
+        DispatchQueue.main.sync {
+            HelperAlert.shared.showAlert = true
+            HelperAlert.shared.objectWillChange.send()
+        }
+        while HelperAlert.shared.showAlert { }
+        let persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
+        
+        if persistenceID != "" {
+            if install_persistence_helper(persistenceID) {
+                Logger.log("成功安装持久性助手！", type: .success)
+            } else {
+                Logger.log("安装持久性助手失败", type: .error)
+            }
         }
     }
     
@@ -252,7 +288,7 @@ func doIndirectInstall(_ device: Device) async -> Bool {
     }
     
     Logger.log("正在查找内核漏洞")
-    if !initialise_kernel_info(kernelPath, false) {
+    if !robustInitialiseKernelInfo(kernelPath, false) {
         Logger.log("查找内核漏洞失败", type: .error)
         return false
     }
@@ -270,15 +306,6 @@ func doIndirectInstall(_ device: Device) async -> Bool {
     Logger.log("成功利用内核", type: .success)
     post_kernel_exploit(false)
     
-    var path: UnsafePointer<CChar>? = nil
-    let pathPointer = withUnsafeMutablePointer(to: &path) { ptr in
-        UnsafeMutablePointer<UnsafePointer<CChar>?>.init(ptr)
-    }
-    if is_persistence_helper_installed(pathPointer) {
-        Logger.log("持久性助手已安装! (\(path == nil ? "unknown" : String(cString: path!)))", type: .warning)
-        return false
-    }
-    
     let apps = get_installed_apps() as? [String]
     var candidates = [InstalledApp]()
     for app in apps ?? [String]() {
@@ -294,35 +321,70 @@ func doIndirectInstall(_ device: Device) async -> Bool {
     
     persistenceHelperCandidates = candidates
     
-    DispatchQueue.main.sync {
-        HelperAlert.shared.showAlert = true
-        HelperAlert.shared.objectWillChange.send()
-    }
-    while HelperAlert.shared.showAlert { }
-    let persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
-    
-    var pathToInstall = ""
-    for candidate in persistenceHelperCandidates {
-        if persistenceID == candidate.bundleIdentifier {
-            pathToInstall = candidate.bundlePath!
+    let autoHelper = TIXDefaults().bool(forKey: "autoInstallHelper")
+    if autoHelper {
+        // 自动安装模式
+        if let firstCandidate = candidates.first {
+            Logger.log("正在自动注入持久性助手到 \(firstCandidate.displayName)")
+            let pathToInstall = firstCandidate.bundlePath!
+            var success = false
+            if !install_persistence_helper_via_vnode(pathToInstall) {
+                Logger.log("安装持久性助手失败", type: .error)
+                Logger.log("5秒后注销...", type: .warning)
+                DispatchQueue.global().async {
+                    sleep(5)
+                    restartBackboard()
+                }
+            } else {
+                Logger.log("成功安装持久性助手", type: .success)
+                success = true
+            }
+            
+            if success {
+                let verbose = TIXDefaults().bool(forKey: "verbose")
+                Logger.log("\(verbose ? "15" : "5") 秒后注销")
+                DispatchQueue.global().async {
+                    sleep(verbose ? 15 : 5)
+                    restartBackboard()
+                }
+            }
+            return true
         }
-    }
-    var success = false
-    if !install_persistence_helper_via_vnode(pathToInstall) {
-        Logger.log("安装持久性助手失败", type: .error)
+        
+        Logger.log("未找到可用的应用来安装持久性助手", type: .error)
+        return false
     } else {
-        Logger.log("成功安装持久性助手", type: .success)
-        success = true
-    }
-    
-    if success {
-        let verbose = TIXDefaults().bool(forKey: "verbose")
-        Logger.log("\(verbose ? "15" : "5") 秒后注销")
-        DispatchQueue.global().async {
-            sleep(verbose ? 15 : 5)
-            restartBackboard()
+        // 手动选择模式
+        DispatchQueue.main.sync {
+            HelperAlert.shared.showAlert = true
+            HelperAlert.shared.objectWillChange.send()
         }
+        while HelperAlert.shared.showAlert { }
+        let persistenceID = TIXDefaults().string(forKey: "persistenceHelper")
+        
+        var pathToInstall = ""
+        for candidate in persistenceHelperCandidates {
+            if persistenceID == candidate.bundleIdentifier {
+                pathToInstall = candidate.bundlePath!
+            }
+        }
+        var success = false
+        if !install_persistence_helper_via_vnode(pathToInstall) {
+            Logger.log("安装持久性助手失败", type: .error)
+        } else {
+            Logger.log("成功安装持久性助手", type: .success)
+            success = true
+        }
+        
+        if success {
+            let verbose = TIXDefaults().bool(forKey: "verbose")
+            Logger.log("\(verbose ? "15" : "5") 秒后注销")
+            DispatchQueue.global().async {
+                sleep(verbose ? 15 : 5)
+                restartBackboard()
+            }
+        }
+        
+        return true
     }
-    
-    return true
 }
