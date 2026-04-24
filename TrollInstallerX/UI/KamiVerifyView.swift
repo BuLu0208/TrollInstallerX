@@ -261,6 +261,7 @@ struct KamiVerifyView: View {
                 }
                 
                 if let code = json["code"] as? Int, code == 200 {
+                    reportAppOpen()
                     self.onVerified()
                 } else {
                     self.errorMessage = json["msg"] as? String ?? "卡密验证失败"
