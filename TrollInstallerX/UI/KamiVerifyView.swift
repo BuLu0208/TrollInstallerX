@@ -151,24 +151,6 @@ struct KamiVerifyView: View {
                             .frame(height: 1)
                             .padding(.horizontal, 24)
                         
-                        VStack(spacing: 10) {
-                            Text("没有卡密点击👇购买链接跳转购买")
-                                .font(.system(size: 13, weight: .bold, design: .rounded))
-                                .foregroundColor(.white.opacity(0.7))
-                            
-                            Link(destination: URL(string: "https://www.820faka.cn//details/180476F2")!) {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "cart.badge.plus")
-                                        .font(.system(size: 11))
-                                        .foregroundColor(Color(hex: 0x533483))
-                                    Text("点此购买激活卡密")
-                                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                                        .underline()
-                                        .foregroundColor(Color(hex: 0x533483))
-                                }
-                            }
-                        }
-                        
                         Rectangle()
                             .fill(Color.white.opacity(0.08))
                             .frame(height: 1)

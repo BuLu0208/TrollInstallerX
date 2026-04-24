@@ -48,31 +48,7 @@ struct CreditsView: View {
                     .background(Color.white.opacity(0.05))
                     .cornerRadius(14)
 
-                    // 2. 卡密购买
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "cart.fill")
-                                .font(.system(size: 14))
-                                .foregroundColor(Color.orange.opacity(0.7))
-                            Text("购买卡密")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                                .foregroundColor(.white.opacity(0.9))
-                        }
 
-                        Link(destination: URL(string: "https://www.820faka.cn//details/180476F2")!) {
-                            HStack {
-                                Text("点击购买卡密")
-                                    .font(.system(size: 15, weight: .medium, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.7))
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(Color.orange.opacity(0.6))
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .background(Color.white.opacity(0.08))
-                            .cornerRadius(10)
                         }
                     }
                     .padding(.horizontal, 24)
