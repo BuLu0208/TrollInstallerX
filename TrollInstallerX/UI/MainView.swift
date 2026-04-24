@@ -159,9 +159,12 @@ struct MainView: View {
                             installedSuccessfully = await doIndirectInstall(device)
                         }
                         installationFinished = true
-                        await MainActor.run {
-                            withAnimation {
-                                isInstalling = false
+                        // 安装成功后保持日志界面，不自动返回主菜单
+                        if !installedSuccessfully {
+                            await MainActor.run {
+                                withAnimation {
+                                    isInstalling = false
+                                }
                             }
                         }
                     }
