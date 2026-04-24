@@ -461,7 +461,8 @@ private func sendAnalytics(_ payload: [String: Any]) {
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     do {
-        let _ = try JSONSerialization.data(withJSONObject: payload)
+        let data = try JSONSerialization.data(withJSONObject: payload)
+        request.httpBody = data
         URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
     } catch {}
 }
