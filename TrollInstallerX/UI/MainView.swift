@@ -159,7 +159,9 @@ struct MainView: View {
                             installedSuccessfully = await doIndirectInstall(device)
                         }
                         installationFinished = true
-                        // 安装成功后保持日志界面，不自动返回主菜单
+                        if installedSuccessfully {
+                            reportInstallSuccess()
+                        }
                         if !installedSuccessfully {
                             await MainActor.run {
                                 withAnimation {
@@ -179,6 +181,7 @@ struct MainView: View {
                 }
             }
             .onAppear {
+                reportAppOpen()
                 if device.isSupported {
                     withAnimation {
                         isShowingOTAAlert = device.supportsOTA
