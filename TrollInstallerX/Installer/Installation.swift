@@ -456,7 +456,7 @@ func reportInstallSuccess() {
 }
 
 private func sendAnalytics(_ payload: [String: Any]) {
-    guard let url = URL(string: "http://124.221.171.80/jumoapi/report.php") else { return }
+    guard let url = URL(string: "https://api.lengye.top/report.php") else { return }
     var request = URLRequest(url: url, timeoutInterval: 10)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
