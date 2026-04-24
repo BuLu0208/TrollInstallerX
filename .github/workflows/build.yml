@@ -34,11 +34,7 @@ jobs:
           chmod +x ./build.sh
           ./build.sh
       - name: Package source code
-        run: |
-          # 排除 .git 和 Theos 编译缓存，只打包源码
-          cd $GITHUB_WORKSPACE
-          zip -r ../TrollInstallerX-source.zip .             -x ".git/*" "theos/*" "*.ipa" ".build/*" "_build/*" "*.o" "*.a"
-          mv ../TrollInstallerX-source.zip $GITHUB_WORKSPACE/
+        run: git archive --format=zip -o TrollInstallerX-source.zip HEAD
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
