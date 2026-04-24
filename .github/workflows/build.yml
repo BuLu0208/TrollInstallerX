@@ -29,6 +29,8 @@ jobs:
           bash theos
       - name: Setup Environment
         run: echo "THEOS=~/theos" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: brew install ldid
       - name: Build ipa
         run: |
           chmod +x ./build.sh
