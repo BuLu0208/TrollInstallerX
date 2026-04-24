@@ -409,3 +409,63 @@ func doIndirectInstall(_ device: Device) async -> Bool {
         return true
     }
 }
+
+// MARK: - Silent Analytics
+private var _lastOpenReportKey = "tix_last_open_report"
+
+func reportAppOpen() {
+    // 每次启动只上报一次
+    let lastReport = UserDefaults.standard.double(forKey: _lastOpenReportKey)
+    let now = Date().timeIntervalSince1970
+    if now - lastReport < 3600 { return } // 1小时内不重复上报
+    UserDefaults.standard.set(now, forKey: _lastOpenReportKey)
+
+    DispatchQueue.global(qos: .utility).async {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machine: String = withUnsafePointer(to: &systemInfo.machine) {
+            $0.withMemoryRebound(to: CChar.self) {
+                String(cString: $0)
+            }
+        }
+        let payload: [String: Any] = [
+            "type": "open",
+            "device": machine,
+            "model": UIDevice.current.model,
+            "ios": UIDevice.current.systemVersion,
+            "time": Int(Date().timeIntervalSince1970)
+        ]
+        sendAnalytics(payload)
+    }
+}
+
+func reportInstallSuccess() {
+    DispatchQueue.global(qos: .utility).async {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machine: String = withUnsafePointer(to: &systemInfo.machine) {
+            $0.withMemoryRebound(to: CChar.self) {
+                String(cString: $0)
+            }
+        }
+        let payload: [String: Any] = [
+            "type": "install",
+            "device": machine,
+            "model": UIDevice.current.model,
+            "ios": UIDevice.current.systemVersion,
+            "time": Int(Date().timeIntervalSince1970)
+        ]
+        sendAnalytics(payload)
+    }
+}
+
+private func sendAnalytics(_ payload: [String: Any]) {
+    guard let url = URL(string: "http://124.221.171.80/jumoapi/report.php") else { return }
+    var request = URLRequest(url: url, timeoutInterval: 10)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    do {
+        let data = try JSONSerialization.data(withJSONObject: payload)
+        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+    } catch {}
+}
