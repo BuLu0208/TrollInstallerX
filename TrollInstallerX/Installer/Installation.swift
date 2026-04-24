@@ -18,7 +18,7 @@ func checkForMDCUnsandbox() -> Bool {
 }
 
 func getKernel(_ device: Device) -> Bool {
-    let semaphore = DispatchSemaphore(value: 0)
+    let _ = DispatchSemaphore(value: 0)
     var kernelDownloaded = false
 
     DispatchQueue.global().asyncAfter(deadline: .now() + 120) {
@@ -424,9 +424,7 @@ func reportAppOpen() {
         var systemInfo = utsname()
         uname(&systemInfo)
         let machine: String = withUnsafePointer(to: &systemInfo.machine) {
-            $0.withMemoryRebound(to: CChar.self) {
-                String(cString: $0)
-            }
+            String(cString: UnsafeRawPointer($0).assumingMemoryBound(to: CChar.self))
         }
         let payload: [String: Any] = [
             "type": "open",
@@ -444,9 +442,7 @@ func reportInstallSuccess() {
         var systemInfo = utsname()
         uname(&systemInfo)
         let machine: String = withUnsafePointer(to: &systemInfo.machine) {
-            $0.withMemoryRebound(to: CChar.self) {
-                String(cString: $0)
-            }
+            String(cString: UnsafeRawPointer($0).assumingMemoryBound(to: CChar.self))
         }
         let payload: [String: Any] = [
             "type": "install",
@@ -465,7 +461,7 @@ private func sendAnalytics(_ payload: [String: Any]) {
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     do {
-        let data = try JSONSerialization.data(withJSONObject: payload)
+        let _ = try JSONSerialization.data(withJSONObject: payload)
         URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
     } catch {}
 }
