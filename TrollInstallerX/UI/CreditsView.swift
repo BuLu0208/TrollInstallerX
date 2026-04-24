@@ -47,14 +47,6 @@ struct CreditsView: View {
                     .padding(.vertical, 16)
                     .background(Color.white.opacity(0.05))
                     .cornerRadius(14)
-
-
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 16)
-                    .background(Color.white.opacity(0.05))
-                    .cornerRadius(14)
                 }
                 .padding(.bottom, 30)
             }
