@@ -24,9 +24,6 @@ struct TrollInstallerXApp: App {
                     .preferredColorScheme(.dark)
                 }
             }
-            .onAppear {
-                reportAppOpen()
-            }
         }
     }
 }
