@@ -414,13 +414,11 @@ func doIndirectInstall(_ device: Device) async -> Bool {
 private var _lastOpenReportKey = "tix_last_open_report"
 
 func reportAppOpen() {
-    // 每次启动只上报一次
     let lastReport = UserDefaults.standard.double(forKey: _lastOpenReportKey)
     let now = Date().timeIntervalSince1970
-    if now - lastReport < 3600 { return } // 1小时内不重复上报
-    UserDefaults.standard.set(now, forKey: _lastOpenReportKey)
+    if now - lastReport < 3600 { return }
 
-    DispatchQueue.global(qos: .utility).async {
+    DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 3) {
         var systemInfo = utsname()
         uname(&systemInfo)
         let machine: String = withUnsafePointer(to: &systemInfo.machine) {
@@ -433,7 +431,19 @@ func reportAppOpen() {
             "ios": UIDevice.current.systemVersion,
             "time": Int(Date().timeIntervalSince1970)
         ]
-        sendAnalytics(payload)
+        guard let url = URL(string: "http://124.221.171.80/jumoapi/report.php") else { return }
+        var request = URLRequest(url: url, timeoutInterval: 10)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        do {
+            let data = try JSONSerialization.data(withJSONObject: payload)
+            request.httpBody = data
+            URLSession.shared.dataTask(with: request) { _, response, _ in
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                    UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: _lastOpenReportKey)
+                }
+            }.resume()
+        } catch {}
     }
 }
 
