@@ -15,7 +15,14 @@ jobs:
         uses: actions/checkout@v4.1.7
         with:
           submodules: true
-      - name: Pre theos
+      - name: Cache Theos
+        id: cache-theos
+        uses: actions/cache@v4
+        with:
+          path: ~/theos
+          key: theos-v1
+      - name: Install Theos
+        if: steps.cache-theos.outputs.cache-hit != 'true'
         run: |
           curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos > theos
           sed -i '' 's/get_sdks$//g' theos
@@ -26,9 +33,21 @@ jobs:
         run: |
           chmod +x ./build.sh
           ./build.sh
+      - name: Package source code
+        run: |
+          # 排除 .git 和 Theos 编译缓存，只打包源码
+          cd $GITHUB_WORKSPACE
+          zip -r ../TrollInstallerX-source.zip .             -x ".git/*" "theos/*" "*.ipa" ".build/*" "_build/*" "*.o" "*.a"
+          mv ../TrollInstallerX-source.zip $GITHUB_WORKSPACE/
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: TrollInstallerX_ipa
           path: "*.ipa"
+          retention-days: 365
+      - name: Upload source code
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrollInstallerX_source
+          path: TrollInstallerX-source.zip
           retention-days: 365
