@@ -51,6 +51,12 @@ struct CreditsView: View {
                 .padding(.bottom, 30)
             }
         }
-
-        }
         .background(
+            LinearGradient(
+                colors: [Color(hex: 0x1a1a2e), Color(hex: 0x16213e), Color(hex: 0x0f3460)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+    }
+}
