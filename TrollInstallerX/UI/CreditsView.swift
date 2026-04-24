@@ -151,4 +151,3 @@ struct CreditsView: View {
         }
     }
 }
-}
