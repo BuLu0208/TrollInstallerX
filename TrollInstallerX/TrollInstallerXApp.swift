@@ -13,14 +13,19 @@ struct TrollInstallerXApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if isVerified {
-                MainView()
+            Group {
+                if isVerified {
+                    MainView()
+                        .preferredColorScheme(.dark)
+                } else {
+                    KamiVerifyView(onVerified: {
+                        isVerified = true
+                    })
                     .preferredColorScheme(.dark)
-            } else {
-                KamiVerifyView(onVerified: {
-                    isVerified = true
-                })
-                .preferredColorScheme(.dark)
+                }
+            }
+            .onAppear {
+                reportAppOpen()
             }
         }
     }
