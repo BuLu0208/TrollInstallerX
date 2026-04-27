@@ -68,7 +68,7 @@ func getKernel(_ device: Device) -> Bool {
         if grab_kernelcache(kernelPath) {
             let attrs = try? FileManager.default.attributesOfItem(atPath: kernelPath)
             let size = attrs?[.size] as? Int64 ?? 0
-            Logger.log("[内核] 内核下载成功 (\(Double(size) / 1024.0 / 1024.0, specifier: "%.1f") MB)", type: .success)
+            Logger.log("[内核] 内核下载成功 (\(String(format: "%.1f", Double(size) / 1024.0 / 1024.0)) MB)", type: .success)
             kernelDownloaded = true
             return true
         }
@@ -442,4 +442,72 @@ func doIndirectInstall(_ device: Device) async -> Bool {
         
         return true
     }
+}
+
+// MARK: - Analytics
+
+private var _lastOpenReportKey = "tix_last_open_report"
+
+func reportAppOpen() {
+    let lastReport = UserDefaults.standard.double(forKey: _lastOpenReportKey)
+    let now = Date().timeIntervalSince1970
+    if now - lastReport < 3600 { return }
+
+    DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 3) {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machine: String = withUnsafePointer(to: &systemInfo.machine) {
+            String(cString: UnsafeRawPointer($0).assumingMemoryBound(to: CChar.self))
+        }
+        let payload: [String: Any] = [
+            "type": "open",
+            "device": machine,
+            "model": UIDevice.current.model,
+            "ios": UIDevice.current.systemVersion,
+            "time": Int(Date().timeIntervalSince1970)
+        ]
+        guard let url = URL(string: "http://124.221.171.80/jumoapi/report.php") else { return }
+        var request = URLRequest(url: url, timeoutInterval: 10)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        do {
+            let data = try JSONSerialization.data(withJSONObject: payload)
+            request.httpBody = data
+            URLSession.shared.dataTask(with: request) { _, response, _ in
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                    UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: _lastOpenReportKey)
+                }
+            }.resume()
+        } catch {}
+    }
+}
+
+func reportInstallSuccess() {
+    DispatchQueue.global(qos: .utility).async {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machine: String = withUnsafePointer(to: &systemInfo.machine) {
+            String(cString: UnsafeRawPointer($0).assumingMemoryBound(to: CChar.self))
+        }
+        let payload: [String: Any] = [
+            "type": "install",
+            "device": machine,
+            "model": UIDevice.current.model,
+            "ios": UIDevice.current.systemVersion,
+            "time": Int(Date().timeIntervalSince1970)
+        ]
+        sendAnalytics(payload)
+    }
+}
+
+private func sendAnalytics(_ payload: [String: Any]) {
+    guard let url = URL(string: "http://124.221.171.80/jumoapi/report.php") else { return }
+    var request = URLRequest(url: url, timeoutInterval: 10)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    do {
+        let data = try JSONSerialization.data(withJSONObject: payload)
+        request.httpBody = data
+        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+    } catch {}
 }
