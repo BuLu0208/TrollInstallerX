@@ -14,6 +14,7 @@ public func TIXDefaults() -> UserDefaults {
         tixUserDefaults = UserDefaults.init(suiteName: tixDefaultsPath)
         tixUserDefaults!.register(defaults: [
             "verbose": false,
+            "autoInstallHelper": true,
         ])
     }
     return tixUserDefaults!

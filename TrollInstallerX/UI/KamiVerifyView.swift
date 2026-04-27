@@ -4,27 +4,60 @@
 //
 
 import SwiftUI
+import CryptoKit
 
 struct KamiVerifyView: View {
     @State private var kamiInput: String = ""
     @State private var isLoading: Bool = false
     @State private var errorMessage: String = ""
     @State private var shimmer: Bool = false
+
+    private func showCopyAlert(_ title: String, message: String) {
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else { return }
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "好的", style: .cancel))
+        window.rootViewController?.present(alert, animated: true)
+    }
     
     let onVerified: () -> Void
     
     private var deviceCode: String {
-        var buf = [UInt8](repeating: 0, count: 256)
-        var size = buf.count
-        sysctlbyname("hw.serialnumber", &buf, &size, nil, 0)
-        var serial = String(cString: buf).trimmingCharacters(in: .controlCharacters)
-        
-        if serial.isEmpty {
-            var utsinfo = utsname()
-            uname(&utsinfo)
-            serial = String(bytes: Data(bytes: &utsinfo.machine, count: Int(_SYS_NAMELEN)), encoding: .ascii)!.trimmingCharacters(in: .controlCharacters)
-        }
-        return serial
+        // Device fingerprint: combine multiple public hardware/software properties
+        // Both TrollInstallerX and persistence helper can read these identically
+        var parts: [String] = []
+
+        // Hardware model
+        var utsinfo = utsname()
+        uname(&utsinfo)
+        let machine = withUnsafePointer(to: &utsinfo.machine) { ptr in
+            String(cString: UnsafeRawPointer(ptr).assumingMemoryBound(to: CChar.self))
+        }.trimmingCharacters(in: .controlCharacters)
+        parts.append(machine)
+
+        // System version
+        parts.append(UIDevice.current.systemVersion)
+
+        // Physical memory (MB)
+        let mem = ProcessInfo.processInfo.physicalMemory / (1024 * 1024)
+        parts.append("\(mem)")
+
+        // Screen size + scale
+        let screen = UIScreen.main
+        let w = Int(screen.nativeBounds.width)
+        let h = Int(screen.nativeBounds.height)
+        parts.append("\(w)x\(h)")
+        parts.append("\(screen.scale)")
+
+        // Processor count
+        parts.append("\(ProcessInfo.processInfo.processorCount)")
+
+        let raw = parts.joined(separator: "|")
+
+        // SHA256 hash via CryptoKit, take first 16 chars
+        let data = Data(raw.utf8)
+        let digest = SHA256.hash(data: data)
+        let hex = digest.prefix(8).map { String(format: "%02x", $0) }.joined()
+        return hex
     }
     
     var body: some View {
@@ -146,6 +179,53 @@ struct KamiVerifyView: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                         }
                         
+                        // ========== 广告区域 ==========
+                        VStack(spacing: 12) {
+                            Button(action: {
+                                UIPasteboard.general.string = "BuLu-0208"
+                                showCopyAlert("已复制", message: "微信号 BuLu-0208 已复制，去微信添加好友（备注问题）")
+                            }) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "person.badge.key.fill")
+                                        .font(.system(size: 13))
+                                    Text("开发者冷夜~招收代理 · 定制巨魔开发")
+                                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                                        .foregroundColor(.white.opacity(0.85))
+                                    Spacer()
+                                    Image(systemName: "doc.on.doc")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.white.opacity(0.5))
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .background(Color(hex: 0x533483).opacity(0.25))
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color(hex: 0x533483).opacity(0.4), lineWidth: 1)
+                                )
+                            }
+
+                            HStack(spacing: 6) {
+                                Image(systemName: "tag.fill")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(Color.orange.opacity(0.8))
+                                Text("闲鱼搜：巨魔工作室 定制")
+                                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Spacer()
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color.orange.opacity(0.08))
+                            .cornerRadius(10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+                            )
+                        }
+                        .padding(.horizontal, 24)
+
                         Rectangle()
                             .fill(Color.white.opacity(0.08))
                             .frame(height: 1)
@@ -222,22 +302,23 @@ struct KamiVerifyView: View {
         isLoading = true
         errorMessage = ""
         
-        var components = URLComponents(string: "http://124.221.171.80/api.php")!
-        components.queryItems = [
-            URLQueryItem(name: "api", value: "kmlogon"),
-            URLQueryItem(name: "app", value: "10002"),
-            URLQueryItem(name: "kami", value: kami),
-            URLQueryItem(name: "markcode", value: deviceCode)
-        ]
-        
-        guard let url = components.url else {
+        guard let url = URL(string: "https://kami.lengye.top/api/login") else {
             errorMessage = "请求构建失败"
             isLoading = false
             return
         }
         
         var request = URLRequest(url: url, timeoutInterval: 10)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("TrollInstallerX/1.0", forHTTPHeaderField: "User-Agent")
+        
+        let body: [String: String] = [
+            "appkey": "9VRZ0ATE1YKM",
+            "card": kami,
+            "device_id": deviceCode
+        ]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -260,11 +341,24 @@ struct KamiVerifyView: View {
                     return
                 }
                 
-                if let code = json["code"] as? Int, code == 200 {
+                let code = json["code"] as? Int ?? -1
+                let msg = json["msg"] as? String ?? ""
+                
+                if code == 0 {
                     reportAppOpen()
                     self.onVerified()
+                } else if code == 1001 {
+                    self.errorMessage = "设备不匹配，请先解绑后再验证"
+                    self.kamiInput = ""
+                } else if code == 1002 {
+                    self.errorMessage = "卡密已过期，请续费或购买新卡密"
+                    self.kamiInput = ""
                 } else {
-                    self.errorMessage = json["msg"] as? String ?? "卡密验证失败"
+                    var errMsg = msg.isEmpty ? "卡密验证失败" : msg
+                    if errMsg == "卡密不存在" { errMsg = "卡密无效，请检查后重试" }
+                    else if errMsg == "卡密已禁用" { errMsg = "卡密已被禁用，请联系管理员" }
+                    else if errMsg == "卡密已使用" { errMsg = "此卡密已使用，请获取新卡密" }
+                    self.errorMessage = errMsg
                     self.kamiInput = ""
                 }
             }
