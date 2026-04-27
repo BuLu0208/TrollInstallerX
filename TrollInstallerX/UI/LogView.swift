@@ -93,8 +93,11 @@ struct LogView: View {
                                 fileHandle.readabilityHandler = nil
                                 sema.signal()
                             } else {
-                                stdoutString += String(data: data, encoding: .utf8)!
-                                stdoutItems.append(StdoutLog(message: String(data: data, encoding: .utf8)!))
+                                let text = String(data: data, encoding: .utf8) ?? ""
+                                stdoutString += text
+                                stdoutItems.append(StdoutLog(message: text))
+                                // 同时写入 stdout 日志文件
+                                Logger.appendStdoutToFile(text)
                             }
                         }
                         // Redirect
@@ -110,7 +113,19 @@ struct LogView: View {
                 } label: {
                     Label("复制到剪贴板", systemImage: "doc.on.doc")
                 }
+                Button {
+                    shareLog(verbose ? Logger.stdoutLogURL : Logger.currentLogURL)
+                } label: {
+                    Label("分享日志文件", systemImage: "square.and.arrow.up")
+                }
             }
         }
+    }
+    
+    private func shareLog(_ url: URL) {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootVC = windowScene.windows.first?.rootViewController else { return }
+        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        rootVC.present(vc, animated: true)
     }
 }
