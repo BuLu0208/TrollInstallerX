@@ -181,30 +181,23 @@ struct KamiVerifyView: View {
                         
                         // ========== 广告区域 ==========
                         VStack(spacing: 12) {
-                            Button(action: {
-                                UIPasteboard.general.string = "BuLu-0208"
-                                showCopyAlert("已复制", message: "微信号 BuLu-0208 已复制，去微信添加好友（备注问题）")
-                            }) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "person.badge.key.fill")
-                                        .font(.system(size: 13))
-                                    Text("开发者冷夜~招收代理 · 定制巨魔开发")
-                                        .font(.system(size: 13, weight: .medium, design: .rounded))
-                                        .foregroundColor(.white.opacity(0.85))
-                                    Spacer()
-                                    Image(systemName: "doc.on.doc")
-                                        .font(.system(size: 12))
-                                        .foregroundColor(.white.opacity(0.5))
-                                }
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .background(Color(hex: 0x533483).opacity(0.25))
-                                .cornerRadius(10)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color(hex: 0x533483).opacity(0.4), lineWidth: 1)
-                                )
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("开发者冷夜~招收代理 · 定制巨魔开发")
+                                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.85))
+                                Text("联系方式V：BuLu-0208")
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.6))
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color(hex: 0x533483).opacity(0.25))
+                            .cornerRadius(10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(hex: 0x533483).opacity(0.4), lineWidth: 1)
+                            )
 
                             HStack(spacing: 6) {
                                 Image(systemName: "tag.fill")
