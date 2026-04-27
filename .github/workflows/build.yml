@@ -5,6 +5,15 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag (leave empty to build only, no release)'
+        required: false
+        default: ''
+      ref:
+        description: 'Git ref to build (branch/tag/SHA). Default: main'
+        required: false
+        default: ''
 
 jobs:
   build:
@@ -14,6 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.7
         with:
+          ref: ${{ github.event.inputs.ref || '' }}
           submodules: true
       - name: Cache Theos
         id: cache-theos
@@ -49,3 +59,29 @@ jobs:
           name: TrollInstallerX_source
           path: TrollInstallerX-source.zip
           retention-days: 365
+
+      # ========== 发布到 GitHub Release（仅 workflow_dispatch 指定 release_tag 时） ==========
+      - name: Create Release and Upload
+        if: github.event.inputs.release_tag != ''
+        run: |
+          git tag -f ${{ github.event.inputs.release_tag }}
+          git push -f origin refs/tags/${{ github.event.inputs.release_tag }}
+
+      - name: Upload Release Assets
+        if: github.event.inputs.release_tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.release_tag }}
+          name: TrollInstallerX 汉化定制版
+          body: |
+            基于 [opa334/TrollInstallerX](https://github.com/opa334/TrollInstallerX) 修改
+            ${{ github.event.inputs.release_tag == 'jumogongzuoshi' && '巨魔工作室定制版 - 卡密验证制' || '开发者定制版' }}
+
+            **文件说明：**
+            - `TrollInstallerX.ipa` — 安装器 IPA
+            - `TrollInstallerX-source.zip` — 源码包
+          files: |
+            *.ipa
+            TrollInstallerX-source.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
